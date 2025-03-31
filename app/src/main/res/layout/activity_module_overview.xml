@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    tools:context=".ModuleOverviewActivity">
+
+    <!-- Module Image -->
+    <ImageView
+        android:id="@+id/moduleImage"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        android:src="@drawable/cpr_image"
+        android:scaleType="fitCenter"
+        android:contentDescription="Module Image"
+        android:layout_gravity="center" />
+
+    <!-- Module Title -->
+    <TextView
+        android:id="@+id/moduleTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CPR Training"
+        android:textSize="24sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Module Description -->
+    <TextView
+        android:id="@+id/moduleDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Learn how to perform CPR to save lives in emergency situations."
+        android:textSize="16sp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"/>
+
+    <!-- Start Learning Button -->
+    <Button
+        android:id="@+id/startLearningButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Learning"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:padding="12dp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

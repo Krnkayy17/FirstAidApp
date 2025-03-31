@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".SubTopicActivity">
+
+    <!-- Subtopic Title -->
+    <TextView
+        android:id="@+id/subtopicTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Subtopic Title"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="8dp"/>
+
+    <!-- Content ScrollView -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Subtopic Image -->
+            <ImageView
+                android:id="@+id/subtopicImage"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/sample_image" />
+
+            <!-- Subtopic Description -->
+            <TextView
+                android:id="@+id/subtopicContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Subtopic Content Goes Here"
+                android:textSize="16sp"
+                android:padding="8dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Next Button -->
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Module Title -->
+        <TextView
+            android:id="@+id/tvModuleName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Module Name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"/>
+
+        <!-- Accessed Date -->
+        <TextView
+            android:id="@+id/tvAccessedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last accessed: March 21, 2025"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Module Description -->
+        <TextView
+            android:id="@+id/tvModuleDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Module Description"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Module Details -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvDifficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Difficulty: Intermediate"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"/>
+
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Duration: 10-15 minutes"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"/>
+
+            <TextView
+                android:id="@+id/tvAssessments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Assessments: 5"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"/>
+
+            <TextView
+                android:id="@+id/tvCompletionCriteria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Completion Criteria: Complete all assessments"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"/>
+        </LinearLayout>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="30"
+            android:layout_marginTop="8dp"
+            android:progressTint="@android:color/holo_blue_dark"/>
+
+        <!-- Continue Module Button -->
+        <Button
+            android:id="@+id/btnContinueModule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Continue Module"
+            android:backgroundTint="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
