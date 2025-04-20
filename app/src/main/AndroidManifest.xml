@@ -13,6 +13,9 @@
         android:theme="@style/Theme.FirstAidApp"
         tools:targetApi="31">
         <activity
+            android:name=".QuizActivity"
+            android:exported="false" />
+        <activity
             android:name=".SubTopicActivity"
             android:exported="false" />
         <activity

@@ -1,9 +1,8 @@
-package com.example.firstaidapp.database;
+package archive;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -12,7 +11,7 @@ import com.example.firstaidapp.models.User;
 public class UserDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "FirstAidApp.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String TABLE_USER = "USER";
     private static final String COLUMN_ID = "UserID";

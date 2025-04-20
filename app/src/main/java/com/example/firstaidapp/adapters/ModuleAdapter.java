@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.firstaidapp.database.FirstAidDatabaseHelper;
 import com.example.firstaidapp.models.Module;
 import com.example.firstaidapp.database.ModuleDAO;
 import com.example.firstaidapp.R;
@@ -67,25 +68,36 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
 
         // Button Click Listener
         holder.btnContinueModule.setOnClickListener(v -> {
-            // Get current date
-            String currentDate = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(new Date());
-
-            // Initialize database
-            ModuleDAO moduleDAO = new ModuleDAO(v.getContext());
-
             // Update last accessed date
+            String currentDate = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(new Date());
+            ModuleDAO moduleDAO = new ModuleDAO(v.getContext());
             moduleDAO.updateLastAccessed(module.getModuleID(), currentDate);
             holder.tvAccessedDate.setText("Last accessed: " + currentDate);
 
-            // Update completion status based on current state
+            // Optionally update status
             if (module.getCompletionStatus().equals("Not Started")) {
                 moduleDAO.updateCompletionStatus(module.getModuleID(), "In Progress");
                 holder.btnContinueModule.setText("Continue Learning");
-            } else if (module.getCompletionStatus().equals("In Progress")) {
-                moduleDAO.updateCompletionStatus(module.getModuleID(), "Completed");
-                holder.btnContinueModule.setText("Finished");
             }
+
+            // Start ModuleOverviewActivity and pass intent extras
+            android.content.Intent intent = new android.content.Intent(context, com.example.firstaidapp.ModuleOverviewActivity.class);
+            intent.putExtra("MODULE_ID", module.getModuleID());
+            intent.putExtra("MODULE_TITLE", module.getModuleName());
+            intent.putExtra("MODULE_DESCRIPTION", module.getDescription());
+
+            // Optional: Set dynamic image
+            if (module.getModuleName().equalsIgnoreCase("CPR")) {
+                intent.putExtra("MODULE_IMAGE", R.drawable.cpr_image);
+            } else if (module.getModuleName().equalsIgnoreCase("Bleeding Management")) {
+                intent.putExtra("MODULE_IMAGE", R.drawable.bleeding_image); // Replace with your actual image
+            } else {
+                intent.putExtra("MODULE_IMAGE", R.drawable.ic_modules); // fallback
+            }
+
+            context.startActivity(intent);
         });
+
     }
 
     @Override

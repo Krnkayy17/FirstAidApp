@@ -3,13 +3,13 @@ package com.example.firstaidapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.firstaidapp.database.UserDatabaseHelper;
+import com.example.firstaidapp.database.FirstAidDatabaseHelper;
+import com.example.firstaidapp.database.UserDAO;
 import com.example.firstaidapp.models.User;
 
 public class LogInActivity extends AppCompatActivity {
@@ -17,31 +17,23 @@ public class LogInActivity extends AppCompatActivity {
     private EditText editTextEmail, editTextPassword;
     private Button buttonLogin;
     private TextView signUpText;
-    private UserDatabaseHelper dbHelper;
+    private UserDAO userDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
-        dbHelper = new UserDatabaseHelper(this);
-
         editTextEmail = findViewById(R.id.text_email);
         editTextPassword = findViewById(R.id.text_pwd);
         buttonLogin = findViewById(R.id.btn_login);
-        signUpText = findViewById(R.id.go_tp_signup); // Find the Sign Up text view
+        signUpText = findViewById(R.id.go_tp_signup);
+
+        FirstAidDatabaseHelper dbHelper = new FirstAidDatabaseHelper(this);
+        userDAO = new UserDAO(dbHelper);
 
         buttonLogin.setOnClickListener(view -> loginUser());
-
-        // Set click listener for Sign Up TextView
-        signUpText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Redirect to SignUpActivity
-                Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
+        signUpText.setOnClickListener(v -> startActivity(new Intent(LogInActivity.this, SignUpActivity.class)));
     }
 
     private void loginUser() {
@@ -53,22 +45,17 @@ public class LogInActivity extends AppCompatActivity {
             return;
         }
 
-        User user = dbHelper.getUserByCredentials(email, password);
-
+        User user = userDAO.getUserByCredentials(email, password);
         if (user != null) {
             Toast.makeText(this, "Login successful! Welcome, " + user.getUserName(), Toast.LENGTH_SHORT).show();
-
-            // Save user details in SharedPreferences (Optional)
             saveUserSession(user);
-
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, HomeActivity.class));
             finish();
         } else {
             Toast.makeText(this, "Invalid email or password!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Save user session in SharedPreferences
     private void saveUserSession(User user) {
         SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -10,92 +10,111 @@ import com.example.firstaidapp.models.Module;
 import java.util.ArrayList;
 import java.util.List;
 
-//ModuleDAO for Database Operations
 public class ModuleDAO {
     private SQLiteDatabase db;
-    private ModuleDatabaseHelper dbHelper;
+    private FirstAidDatabaseHelper dbHelper;
 
     public ModuleDAO(Context context) {
-        dbHelper = new ModuleDatabaseHelper(context);
-    }
-
-    public void open() {
-        db = dbHelper.getWritableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
+        dbHelper = new FirstAidDatabaseHelper(context);
+        db = dbHelper.getWritableDatabase(); // Auto-open DB
     }
 
     public long addModule(Module module) {
-        open();
         ContentValues values = new ContentValues();
-        values.put(ModuleDatabaseHelper.COLUMN_MODULE_NAME, module.getModuleName());
-        values.put(ModuleDatabaseHelper.COLUMN_MODULE_DESCRIPTION, module.getDescription());
-        values.put(ModuleDatabaseHelper.COLUMN_DIFFICULTY_LEVEL, module.getDifficultyLevel());
-        values.put(ModuleDatabaseHelper.COLUMN_ESTIMATED_DURATION, module.getEstimatedDuration());
-        values.put(ModuleDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS, module.getTotalAssessments());
-        values.put(ModuleDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA, module.getCompletionCriteria());
-        values.put(ModuleDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE, module.getAccessedDate());
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_NAME, module.getModuleName());
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_DESCRIPTION, module.getDescription());
+        values.put(FirstAidDatabaseHelper.COLUMN_DIFFICULTY_LEVEL, module.getDifficultyLevel());
+        values.put(FirstAidDatabaseHelper.COLUMN_ESTIMATED_DURATION, module.getEstimatedDuration());
+        values.put(FirstAidDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS, module.getTotalAssessments());
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA, module.getCompletionCriteria());
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE, module.getAccessedDate());
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS, module.getCompletionStatus());
 
-        long result = db.insert(ModuleDatabaseHelper.TABLE_MODULE, null, values);
-        close();
-        return result;
+        return db.insert(FirstAidDatabaseHelper.TABLE_MODULE, null, values);
+    }
+
+    public Module getModuleById(int moduleId) {
+        Cursor cursor = db.query(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                null,
+                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
+                new String[]{String.valueOf(moduleId)},
+                null, null, null
+        );
+
+        Module module = null;
+        if (cursor.moveToFirst()) {
+            module = new Module(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_DESCRIPTION)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_DIFFICULTY_LEVEL)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_ESTIMATED_DURATION)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS))
+            );
+        }
+
+        cursor.close();
+        return module;
     }
 
     public List<Module> getAllModules() {
-        open();
         List<Module> moduleList = new ArrayList<>();
-        Cursor cursor = db.query(ModuleDatabaseHelper.TABLE_MODULE,
-                new String[]{ModuleDatabaseHelper.COLUMN_MODULE_ID, ModuleDatabaseHelper.COLUMN_MODULE_NAME,
-                        ModuleDatabaseHelper.COLUMN_MODULE_DESCRIPTION, ModuleDatabaseHelper.COLUMN_DIFFICULTY_LEVEL,
-                        ModuleDatabaseHelper.COLUMN_ESTIMATED_DURATION, ModuleDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS,
-                        ModuleDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA, ModuleDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE,
-                        ModuleDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS},
-                null, null, null, null, null);
+        Cursor cursor = db.query(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
 
         if (cursor.moveToFirst()) {
             do {
                 Module module = new Module(
-                        cursor.getInt(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3),
-                        cursor.getInt(4),
-                        cursor.getInt(5),
-                        cursor.getString(6),
-                        cursor.getString(7), // Last Accessed Date
-                        cursor.getString(8)  // Completion Status
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_DIFFICULTY_LEVEL)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_ESTIMATED_DURATION)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS))
                 );
                 moduleList.add(module);
             } while (cursor.moveToNext());
         }
+
         cursor.close();
-        close();
         return moduleList;
     }
 
-    // Update Last Accessed Date
     public void updateLastAccessed(int moduleID, String lastAccessedDate) {
-        open();
         ContentValues values = new ContentValues();
-        values.put(ModuleDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE, lastAccessedDate);
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE, lastAccessedDate);
 
-        db.update(ModuleDatabaseHelper.TABLE_MODULE, values, ModuleDatabaseHelper.COLUMN_MODULE_ID + "=?",
-                new String[]{String.valueOf(moduleID)});
-        close();
+        db.update(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                values,
+                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
+                new String[]{String.valueOf(moduleID)}
+        );
     }
 
-    //Update Completion Status
     public void updateCompletionStatus(int moduleID, String status) {
-        open();
         ContentValues values = new ContentValues();
-        values.put(ModuleDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS, status);
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS, status);
 
-        db.update(ModuleDatabaseHelper.TABLE_MODULE, values, ModuleDatabaseHelper.COLUMN_MODULE_ID + "=?",
-                new String[]{String.valueOf(moduleID)});
-        close();
+        db.update(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                values,
+                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
+                new String[]{String.valueOf(moduleID)}
+        );
     }
-
-
 }

@@ -2,27 +2,28 @@ package com.example.firstaidapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.firstaidapp.database.UserDatabaseHelper;
+import com.example.firstaidapp.database.FirstAidDatabaseHelper;
+import com.example.firstaidapp.database.UserDAO;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText editTextName, editTextEmail, editTextPhone, editTextPassword, editTextConfirmPassword;
     private Button buttonCreateAccount;
     private TextView goToLogin;
-    private UserDatabaseHelper dbHelper;
+    private UserDAO userDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        dbHelper = new UserDatabaseHelper(this);
+        FirstAidDatabaseHelper dbHelper = new FirstAidDatabaseHelper(this);
+        userDAO = new UserDAO(dbHelper);
 
         editTextName = findViewById(R.id.editTextName);
         editTextEmail = findViewById(R.id.editTextEmail);
@@ -30,18 +31,13 @@ public class SignUpActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
         buttonCreateAccount = findViewById(R.id.buttonCreateAccount);
-        goToLogin = findViewById(R.id.go_to_login); // Find the TextView
+        goToLogin = findViewById(R.id.go_to_login);
 
         buttonCreateAccount.setOnClickListener(view -> registerUser());
-
-        // Navigate to LogInActivity when the user clicks "Already have an account? Log In"
-        goToLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SignUpActivity.this, LogInActivity.class);
-                startActivity(intent);
-                finish(); // Close the SignUpActivity
-            }
+        goToLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(SignUpActivity.this, LogInActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 
@@ -62,12 +58,12 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        if (dbHelper.checkUserExists(email)) {
+        if (userDAO.checkUserExists(email)) {
             Toast.makeText(this, "Email already registered!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (dbHelper.insertUser(name, email, phone, password)) {
+        if (userDAO.insertUser(name, email, phone, password)) {
             Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LogInActivity.class));
             finish();

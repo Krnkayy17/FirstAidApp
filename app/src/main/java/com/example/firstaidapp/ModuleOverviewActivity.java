@@ -25,24 +25,17 @@ public class ModuleOverviewActivity extends AppCompatActivity {
         moduleDescription = findViewById(R.id.moduleDescription);
         startLearningButton = findViewById(R.id.startLearningButton);
 
-        // Set content dynamically (optional, if using multiple modules)
         Intent intent = getIntent();
-        String title = intent.getStringExtra("MODULE_TITLE");
-        String description = intent.getStringExtra("MODULE_DESCRIPTION");
-        int imageResId = intent.getIntExtra("MODULE_IMAGE", R.drawable.cpr_image);
+        int moduleId = intent.getIntExtra("MODULE_ID", -1); // Needed for SubTopicActivity
 
-        moduleTitle.setText(title);
-        moduleDescription.setText(description);
-        moduleImage.setImageResource(imageResId);
-
-        // Start learning button click listener
         startLearningButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent subtopicIntent = new Intent(ModuleOverviewActivity.this, SubTopicActivity.class);
-                subtopicIntent.putExtra("MODULE_TITLE", title); // Pass module title
+                subtopicIntent.putExtra("MODULE_ID", moduleId); // Send correct module ID
                 startActivity(subtopicIntent);
             }
         });
+
     }
 }

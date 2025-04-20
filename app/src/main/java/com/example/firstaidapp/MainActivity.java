@@ -11,27 +11,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //this.deleteDatabase("FirstAidApp.db");
         setContentView(R.layout.activity_main);
 
         Button loginButton = findViewById(R.id.loginButton);
         Button signupButton = findViewById(R.id.signupButton);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to LoginActivity
-                Intent intent = new Intent(MainActivity.this, LogInActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        signupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to SignupActivity
-                Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
+        loginButton.setOnClickListener(v -> startActivity(
+                new Intent(MainActivity.this, LogInActivity.class)
+            )
+        );
+        signupButton.setOnClickListener(v -> startActivity(
+                new Intent(MainActivity.this, SignUpActivity.class)
+            )
+        );
     }
 }
