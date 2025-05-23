@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".QuizScenarioActivity">
+
+    <!-- Question Title -->
+    <TextView
+        android:id="@+id/tv_scenario_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scenario Title"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Scenario Image -->
+    <ImageView
+        android:id="@+id/img_scenario"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="12dp"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        android:contentDescription="Scenario Image" />
+
+    <!-- Question Instruction -->
+    <TextView
+        android:id="@+id/tv_scenario_instruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Drag and drop the steps into the correct sequence."
+        android:layout_marginTop="8dp" />
+
+    <!-- Steps RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_steps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="#F5F5F5"
+        android:padding="8dp" />
+
+    <!-- Control Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/btn_reset_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reset Order"
+            android:backgroundTint="#CCCCCC" />
+
+        <Button
+            android:id="@+id/btn_submit_scenario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit Answer"
+            android:layout_marginStart="12dp"
+            android:backgroundTint="@color/purple_500" />
+    </LinearLayout>
+
+</LinearLayout>

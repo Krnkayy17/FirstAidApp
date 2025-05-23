@@ -10,6 +10,12 @@ public class Content {
     private int contentOrder;
 
     // Constructor
+
+    public Content() {
+        // Empty constructor for manual field setting
+    }
+
+
     public Content(int contentID, int moduleID, String contentTitle, String contentText, String contentImage, String contentURL, int contentOrder) {
         this.contentID = contentID;
         this.moduleID = moduleID;
@@ -21,11 +27,11 @@ public class Content {
     }
 
     // Getters
-    public int getContentID() {
+    public int getContentId() {
         return contentID;
     }
 
-    public int getModuleID() {
+    public int getModuleId() {
         return moduleID;
     }
 
@@ -50,11 +56,11 @@ public class Content {
     }
 
     // Setters
-    public void setContentID(int contentID) {
+    public void setContentId(int contentID) {
         this.contentID = contentID;
     }
 
-    public void setModuleID(int moduleID) {
+    public void setModuleId(int moduleID) {
         this.moduleID = moduleID;
     }
 

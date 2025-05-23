@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.firstaidapp.database.ModuleDAO;
+import com.example.firstaidapp.models.Module;
+
 public class ModuleOverviewActivity extends AppCompatActivity {
 
     private ImageView moduleImage;
@@ -19,23 +22,34 @@ public class ModuleOverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_module_overview);
 
-        // Initialize UI elements
+        // UI init
         moduleImage = findViewById(R.id.moduleImage);
         moduleTitle = findViewById(R.id.moduleTitle);
         moduleDescription = findViewById(R.id.moduleDescription);
         startLearningButton = findViewById(R.id.startLearningButton);
 
+        // Get module ID
         Intent intent = getIntent();
-        int moduleId = intent.getIntExtra("MODULE_ID", -1); // Needed for SubTopicActivity
+        int moduleId = intent.getIntExtra("MODULE_ID", -1);
+
+        // Fetch module details
+        ModuleDAO moduleDAO = new ModuleDAO(this);
+        Module module = moduleDAO.getModuleById(moduleId);
+
+        if (module != null) {
+            moduleTitle.setText(module.getModuleName());
+            moduleDescription.setText(module.getDescription());
+            // Optional: Set image dynamically if different modules have different images
+        }
 
         startLearningButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent subtopicIntent = new Intent(ModuleOverviewActivity.this, SubTopicActivity.class);
-                subtopicIntent.putExtra("MODULE_ID", moduleId); // Send correct module ID
+                subtopicIntent.putExtra("MODULE_ID", moduleId);
                 startActivity(subtopicIntent);
             }
         });
-
     }
+
 }

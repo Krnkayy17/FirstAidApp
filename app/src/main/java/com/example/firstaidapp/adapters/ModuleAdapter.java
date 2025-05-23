@@ -50,33 +50,33 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
 
         // Set button text based on completion status
         String buttonText;
-        switch (module.getCompletionStatus()) {
-            case "Not Started":
-                buttonText = "Start Learning";
-                break;
-            case "In Progress":
-                buttonText = "Continue Learning";
-                break;
-            case "Completed":
-                buttonText = "Finished";
-                break;
-            default:
-                buttonText = "Start Learning";
-                break;
+        String status = module.getCompletionStatus();
+
+        if ("Not Started".equals(status)) {
+            buttonText = "Start Learning";
+        } else if ("In Progress".equals(status)) {
+            buttonText = "Continue Learning";
+        } else if ("Completed".equals(status)) {
+            buttonText = "Finished";
+        } else {
+            buttonText = "Start Learning";
         }
         holder.btnContinueModule.setText(buttonText);
 
-        // Button Click Listener
         holder.btnContinueModule.setOnClickListener(v -> {
             // Update last accessed date
             String currentDate = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(new Date());
             ModuleDAO moduleDAO = new ModuleDAO(v.getContext());
             moduleDAO.updateLastAccessed(module.getModuleID(), currentDate);
+
+            // Update UI and local data
+            module.setAccessedDate(currentDate);
             holder.tvAccessedDate.setText("Last accessed: " + currentDate);
 
-            // Optionally update status
+            // If status is "Not Started", update to "In Progress"
             if (module.getCompletionStatus().equals("Not Started")) {
                 moduleDAO.updateCompletionStatus(module.getModuleID(), "In Progress");
+                module.setCompletionStatus("In Progress");
                 holder.btnContinueModule.setText("Continue Learning");
             }
 
@@ -90,15 +90,15 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
             if (module.getModuleName().equalsIgnoreCase("CPR")) {
                 intent.putExtra("MODULE_IMAGE", R.drawable.cpr_image);
             } else if (module.getModuleName().equalsIgnoreCase("Bleeding Management")) {
-                intent.putExtra("MODULE_IMAGE", R.drawable.bleeding_image); // Replace with your actual image
+                intent.putExtra("MODULE_IMAGE", R.drawable.bleeding_image);
             } else {
-                intent.putExtra("MODULE_IMAGE", R.drawable.ic_modules); // fallback
+                intent.putExtra("MODULE_IMAGE", R.drawable.ic_modules);
             }
 
             context.startActivity(intent);
         });
-
     }
+
 
     @Override
     public int getItemCount() {

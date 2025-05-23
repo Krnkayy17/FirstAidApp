@@ -24,18 +24,51 @@ public class Module {
     }
 
     // Getters
-    public int getModuleID() { return moduleID; }
-    public String getModuleName() { return moduleName; }
-    public String getDescription() { return description; }
-    public String getDifficultyLevel() { return difficultyLevel; }
-    public int getEstimatedDuration() { return estimatedDuration; }
-    public int getTotalAssessments() { return totalAssessments; }
-    public String getCompletionCriteria() { return completionCriteria; }
-    public String getAccessedDate() { return accessedDate; }
-    public String getCompletionStatus() { return completionStatus; }
+    public int getModuleID() {
+        return moduleID;
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDifficultyLevel() {
+        return difficultyLevel;
+    }
+
+    public int getEstimatedDuration() {
+        return estimatedDuration;
+    }
+
+    public int getTotalAssessments() {
+        return totalAssessments;
+    }
+
+    public String getCompletionCriteria() {
+        return completionCriteria;
+    }
+
+    public String getAccessedDate() {
+        return accessedDate;
+    }
+
+    public String getCompletionStatus() {
+        return completionStatus;
+    }
 
     // Setters
-    public void setCompletionStatus(String completionStatus) { this.completionStatus = completionStatus; }
+    public void setCompletionStatus(String completionStatus) {
+        this.completionStatus = completionStatus;
+    }
+
+    public void setAccessedDate(String accessedDate) {
+        this.accessedDate = accessedDate;
+    }
+
 }
 
 

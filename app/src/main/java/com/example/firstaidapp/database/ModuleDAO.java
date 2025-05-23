@@ -33,44 +33,11 @@ public class ModuleDAO {
         return db.insert(FirstAidDatabaseHelper.TABLE_MODULE, null, values);
     }
 
-    public Module getModuleById(int moduleId) {
-        Cursor cursor = db.query(
-                FirstAidDatabaseHelper.TABLE_MODULE,
-                null,
-                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
-                new String[]{String.valueOf(moduleId)},
-                null, null, null
-        );
-
-        Module module = null;
-        if (cursor.moveToFirst()) {
-            module = new Module(
-                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ID)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_NAME)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_DESCRIPTION)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_DIFFICULTY_LEVEL)),
-                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_ESTIMATED_DURATION)),
-                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS))
-            );
-        }
-
-        cursor.close();
-        return module;
-    }
-
     public List<Module> getAllModules() {
         List<Module> moduleList = new ArrayList<>();
         Cursor cursor = db.query(
                 FirstAidDatabaseHelper.TABLE_MODULE,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
+                null, null, null, null, null, null
         );
 
         if (cursor.moveToFirst()) {
@@ -117,4 +84,44 @@ public class ModuleDAO {
                 new String[]{String.valueOf(moduleID)}
         );
     }
+
+    public Module getModuleById(int id) {
+        Cursor cursor = db.query(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                null,
+                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
+                new String[]{String.valueOf(id)},
+                null, null, null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            Module module = new Module(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_DESCRIPTION)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_DIFFICULTY_LEVEL)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_ESTIMATED_DURATION)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS))
+            );
+            cursor.close();
+            return module;
+        }
+        return null;
+    }
+
+
+    public int getModuleProgress(int moduleId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT progress FROM MODULE WHERE id = ?", new String[]{String.valueOf(moduleId)});
+        int progress = 0;
+        if (cursor.moveToFirst()) {
+            progress = cursor.getInt(0);
+        }
+        cursor.close();
+        return progress;
+    }
+
 }

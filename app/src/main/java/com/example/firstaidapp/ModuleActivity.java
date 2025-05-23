@@ -40,17 +40,30 @@ public class ModuleActivity extends AppCompatActivity {
         // Load modules from database
         moduleList = moduleDAO.getAllModules();
 
-        // If no data in database, add sample modules (optional)
         if (moduleList.isEmpty()) {
             moduleList = new ArrayList<>();
             moduleList.add(new Module(1, "CPR", "Learn CPR techniques", "Intermediate", 15, 5, "Complete all assessments", "Not Accessed Yet", "Not Started"));
             moduleList.add(new Module(2, "Bleeding Management", "Control bleeding in emergencies", "Beginner", 10, 4, "Pass all assessments", "Not Accessed Yet", "Not Started"));
+
+            for (Module module : moduleList) {
+                moduleDAO.addModule(module);  // <-- Add this line
+            }
         }
 
-        // Set Adapter
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload module list to reflect any changes made
+        loadModules();
+    }
+
+    private void loadModules() {
+        ModuleDAO moduleDAO = new ModuleDAO(this);
+        List<Module> moduleList = moduleDAO.getAllModules();
         moduleAdapter = new ModuleAdapter(this, moduleList);
         recyclerView.setAdapter(moduleAdapter);
     }
-
 
 }
