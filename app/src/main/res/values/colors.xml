@@ -4,4 +4,17 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FFCC0000</color>
     <color name="blue">#FF0099CC</color>
+    <color name="nav_selected">#B71C1C</color> <!-- bold red -->
+    <color name="nav_unselected">#9E9E9E</color> <!-- gray -->
+    <color name="nav_background">#FFF5F5</color> <!-- soft pink -->
+    <color name="completed_color">#4CAF50</color> <!-- green -->
+    <color name="in_progress_color">#FF9800</color> <!-- orange -->
+    <color name="not_started_color">#BDBDBD</color> <!-- gray -->
+    <color name="module_not_started">#D32F2F</color>
+    <color name="module_in_progress">#FFA000</color>
+    <color name="module_completed">#388E3C</color>
+    <color name="module_locked">#9E9E9E</color>
+    <color name="gray">#9E9E9E</color>
+
+
 </resources>

@@ -6,18 +6,22 @@ public class User {
     private String userEmail;
     private String userPhoneNum;
     private String userPassword;
+    private String userType; // Two types, VADs or general public
+    private String userImage;
+
+    // Empty constructor (useful when creating objects dynamically)
+    public User() {}
 
     // Constructor
-    public User(int userId, String userName, String userEmail, String userPhoneNum, String userPassword) {
+    public User(int userId, String userName, String userEmail, String userPhoneNum, String userPassword, String userType, String userImage) {
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPhoneNum = userPhoneNum;
         this.userPassword = userPassword;
+        this.userType = userType;
+        this.userImage = userImage;
     }
-
-    // Empty constructor (useful when creating objects dynamically)
-    public User() {}
 
     // Getters and Setters
     public int getUserId() {
@@ -59,4 +63,12 @@ public class User {
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
     }
+
+    public String getUserType() { return userType; }
+
+    public void setUserType(String userType) { this.userType = userType; }
+
+    public String getUserImage() { return userImage; }
+
+    public void setUserImage(String userImage) { this.userImage = userImage; }
 }

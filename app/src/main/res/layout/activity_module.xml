@@ -1,35 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp"
     tools:context=".ModuleActivity">
 
-    <ImageView
-        android:id="@+id/imgModuleBanner"
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:src="@drawable/ic_modules"
-        android:scaleType="fitCenter"
-        android:contentDescription="Module Banner"
-        android:layout_marginBottom="12dp"/>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/nav_background"
+        android:titleTextColor="@android:color/black"
+        app:title="Module"
+        android:layout_alignParentTop="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="First Aid Modules"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:paddingBottom="8dp"
-        />
+    <!-- Content Wrapper with ScrollView for better fit -->
+    <ScrollView
+        android:id="@+id/scrollContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation"
+        android:layout_below="@id/toolbar"
+        android:fillViewport="true">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewModules"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Module Banner -->
+            <ImageView
+                android:id="@+id/imgModuleBanner"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/module_img"
+                android:scaleType="fitCenter"
+                android:contentDescription="Module Banner"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First Aid Modules"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:paddingBottom="4dp" />
+
+            <!-- Summary -->
+            <TextView
+                android:id="@+id/tvModuleSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Modules Completed: 0 / 0"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginBottom="8dp" />
+
+
+            <!-- Module List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewModules"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Fixed Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"
-        />
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:background="@color/nav_background"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="selected"
+        app:itemIconTint="@color/nav_selector"
+        app:itemTextColor="@color/nav_selector" />
+</RelativeLayout>

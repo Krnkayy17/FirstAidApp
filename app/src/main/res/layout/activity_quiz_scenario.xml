@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:text="Submit Answer"
             android:layout_marginStart="12dp"
-            android:backgroundTint="@color/purple_500" />
+            android:backgroundTint="@color/red" />
     </LinearLayout>
 
 </LinearLayout>

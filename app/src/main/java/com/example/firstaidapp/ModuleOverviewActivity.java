@@ -39,17 +39,24 @@ public class ModuleOverviewActivity extends AppCompatActivity {
         if (module != null) {
             moduleTitle.setText(module.getModuleName());
             moduleDescription.setText(module.getDescription());
-            // Optional: Set image dynamically if different modules have different images
+
+            int moduleImageResId = intent.getIntExtra("MODULE_IMAGE", -1);
+            if (moduleImageResId != -1) {
+                moduleImage.setImageResource(moduleImageResId);
+            }
         }
+
 
         startLearningButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent subtopicIntent = new Intent(ModuleOverviewActivity.this, SubTopicActivity.class);
                 subtopicIntent.putExtra("MODULE_ID", moduleId);
+                subtopicIntent.putExtra("MODULE_TITLE", module.getModuleName()); // ✅ Add this line
                 startActivity(subtopicIntent);
             }
         });
+
     }
 
 }

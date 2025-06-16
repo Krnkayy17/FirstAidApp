@@ -1,13 +1,16 @@
 package com.example.firstaidapp.models;
 
+import android.database.Cursor;
+
 public class Content {
-    private int contentID;
-    private int moduleID;
+    private int contentId;
+    private int moduleId;
     private String contentTitle;
     private String contentText;
     private String contentImage;
     private String contentURL;
     private int contentOrder;
+    private String contentType;
 
     // Constructor
 
@@ -15,24 +18,24 @@ public class Content {
         // Empty constructor for manual field setting
     }
 
-
-    public Content(int contentID, int moduleID, String contentTitle, String contentText, String contentImage, String contentURL, int contentOrder) {
-        this.contentID = contentID;
-        this.moduleID = moduleID;
-        this.contentTitle = contentTitle;
-        this.contentText = contentText;
-        this.contentImage = contentImage;
-        this.contentURL = contentURL;
-        this.contentOrder = contentOrder;
+    public Content(int moduleId, String title, String text, String image, String url, int order, String type) {
+        this.moduleId = moduleId;
+        this.contentTitle = title;
+        this.contentText = text;
+        this.contentImage = image;
+        this.contentURL = url;
+        this.contentOrder = order;
+        this.contentType = type;
     }
+
 
     // Getters
     public int getContentId() {
-        return contentID;
+        return contentId;
     }
 
     public int getModuleId() {
-        return moduleID;
+        return moduleId;
     }
 
     public String getContentTitle() {
@@ -55,14 +58,21 @@ public class Content {
         return contentOrder;
     }
 
+    public String getContentType() {
+        return contentType;
+    }
+
+
+    // Setters
     // Setters
     public void setContentId(int contentID) {
-        this.contentID = contentID;
+        this.contentId = contentID; // fix
     }
 
     public void setModuleId(int moduleID) {
-        this.moduleID = moduleID;
+        this.moduleId = moduleID; // fix
     }
+
 
     public void setContentTitle(String contentTitle) {
         this.contentTitle = contentTitle;
@@ -83,5 +93,23 @@ public class Content {
     public void setContentOrder(int contentOrder) {
         this.contentOrder = contentOrder;
     }
-}
 
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public static Content fromCursor(Cursor cursor) {
+        Content content = new Content();
+        content.setContentId(cursor.getInt(cursor.getColumnIndexOrThrow("ContentID")));
+        content.setModuleId(cursor.getInt(cursor.getColumnIndexOrThrow("ModuleID")));
+        content.setContentTitle(cursor.getString(cursor.getColumnIndexOrThrow("ContentTitle")));
+        content.setContentText(cursor.getString(cursor.getColumnIndexOrThrow("ContentText")));
+        content.setContentImage(cursor.getString(cursor.getColumnIndexOrThrow("ContentImage")));
+        content.setContentURL(cursor.getString(cursor.getColumnIndexOrThrow("ContentURL")));
+        content.setContentOrder(cursor.getInt(cursor.getColumnIndexOrThrow("ContentOrder")));
+        content.setContentType(cursor.getString(cursor.getColumnIndexOrThrow("ContentType")));
+        return content;
+    }
+
+
+}

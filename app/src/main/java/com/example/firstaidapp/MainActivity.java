@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.firstaidapp.database.FirstAidDatabaseHelper;
+import com.example.firstaidapp.database.QuestionDAO;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -13,6 +16,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //this.deleteDatabase("FirstAidApp.db");
         setContentView(R.layout.activity_main);
+
+        // Initialize the database
+        FirstAidDatabaseHelper dbHelper = new FirstAidDatabaseHelper(this);
+        dbHelper.getWritableDatabase(); // This ensures DB gets created
+
+        // Insert sample questions only if not already inserted
+        QuestionDAO questionDAO = new QuestionDAO(this);
+        if (questionDAO.getQuestionsByModuleId(1).isEmpty()) {
+            questionDAO.insertSampleQuestions(this);
+        }
 
         Button loginButton = findViewById(R.id.loginButton);
         Button signupButton = findViewById(R.id.signupButton);

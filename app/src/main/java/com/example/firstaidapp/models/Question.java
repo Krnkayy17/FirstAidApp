@@ -11,13 +11,17 @@ public class Question {
     private String optionD;
     private String correctAnswer;
     private String correctSequence;
-    private String questionImage; // New field!
+    private String questionImage;
+    private String explanation;
+    private String userAnswer;
+    private String userSequence;
+
 
     public Question() {}
 
     public Question(int moduleId, String questionText, String questionType,
                     String optionA, String optionB, String optionC, String optionD,
-                    String correctAnswer, String correctSequence, String questionImage) {
+                    String correctAnswer, String correctSequence, String questionImage, String explanation, String userAnswer, String userSequence) {
         this.moduleId = moduleId;
         this.questionText = questionText;
         this.questionType = questionType;
@@ -28,6 +32,9 @@ public class Question {
         this.correctAnswer = correctAnswer;
         this.correctSequence = correctSequence;
         this.questionImage = questionImage;
+        this.explanation = explanation;
+        this.userAnswer = userAnswer;
+        this.userSequence = userSequence;
     }
 
     // Getters and Setters
@@ -63,4 +70,13 @@ public class Question {
 
     public String getQuestionImage() { return questionImage; }
     public void setQuestionImage(String questionImage) { this.questionImage = questionImage; }
+
+    public String getExplanation() { return explanation; }
+    public void setExplanation(String explanation) { this.explanation = explanation; }
+
+    public String getUserAnswer() { return userAnswer; }
+    public void setUserAnswer(String userAnswer) { this.userAnswer = userAnswer; }
+
+    public String getUserSequence() { return userSequence; }
+    public void setUserSequence(String userSequence) { this.userSequence = userSequence; }
 }

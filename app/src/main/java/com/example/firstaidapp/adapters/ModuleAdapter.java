@@ -1,19 +1,20 @@
 package com.example.firstaidapp.adapters;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.content.Intent;
+import android.view.*;
+import android.widget.*;
+
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.firstaidapp.database.FirstAidDatabaseHelper;
-import com.example.firstaidapp.models.Module;
-import com.example.firstaidapp.database.ModuleDAO;
+import com.example.firstaidapp.ModuleOverviewActivity;
 import com.example.firstaidapp.R;
+import com.example.firstaidapp.database.ModuleDAO;
+import com.example.firstaidapp.models.Module;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,7 +22,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleViewHolder> {
-    private Context context;
+
+    private final Context context;
     private List<Module> moduleList;
 
     public ModuleAdapter(Context context, List<Module> moduleList) {
@@ -41,72 +43,161 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
         Module module = moduleList.get(position);
 
         holder.tvModuleName.setText(module.getModuleName());
-        holder.tvAccessedDate.setText("Last accessed: " + module.getAccessedDate());
+        holder.tvAccessedDate.setText(formatAccessedDate(module.getAccessedDate()));
         holder.tvModuleDescription.setText(module.getDescription());
         holder.tvDifficulty.setText("Difficulty: " + module.getDifficultyLevel());
         holder.tvDuration.setText("Duration: " + module.getEstimatedDuration() + " minutes");
         holder.tvAssessments.setText("Assessments: " + module.getTotalAssessments());
-        holder.tvCompletionCriteria.setText("Completion Criteria: " + module.getCompletionCriteria());
+        holder.tvCompletionCriteria.setText("Completion: " + module.getCompletionCriteria());
 
-        // Set button text based on completion status
-        String buttonText;
-        String status = module.getCompletionStatus();
+        int progress = module.getProgressPercentage();
+        holder.progressBar.setProgress(progress);
+        holder.tvModuleProgress.setText("Progress: " + progress + "%");
 
-        if ("Not Started".equals(status)) {
-            buttonText = "Start Learning";
-        } else if ("In Progress".equals(status)) {
-            buttonText = "Continue Learning";
-        } else if ("Completed".equals(status)) {
-            buttonText = "Finished";
+        setStatusUI(holder, module);
+
+        if (module.isLocked()) {
+            setupLockedState(holder);
         } else {
-            buttonText = "Start Learning";
+            setupUnlockedState(holder, module, progress);
         }
-        holder.btnContinueModule.setText(buttonText);
-
-        holder.btnContinueModule.setOnClickListener(v -> {
-            // Update last accessed date
-            String currentDate = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(new Date());
-            ModuleDAO moduleDAO = new ModuleDAO(v.getContext());
-            moduleDAO.updateLastAccessed(module.getModuleID(), currentDate);
-
-            // Update UI and local data
-            module.setAccessedDate(currentDate);
-            holder.tvAccessedDate.setText("Last accessed: " + currentDate);
-
-            // If status is "Not Started", update to "In Progress"
-            if (module.getCompletionStatus().equals("Not Started")) {
-                moduleDAO.updateCompletionStatus(module.getModuleID(), "In Progress");
-                module.setCompletionStatus("In Progress");
-                holder.btnContinueModule.setText("Continue Learning");
-            }
-
-            // Start ModuleOverviewActivity and pass intent extras
-            android.content.Intent intent = new android.content.Intent(context, com.example.firstaidapp.ModuleOverviewActivity.class);
-            intent.putExtra("MODULE_ID", module.getModuleID());
-            intent.putExtra("MODULE_TITLE", module.getModuleName());
-            intent.putExtra("MODULE_DESCRIPTION", module.getDescription());
-
-            // Optional: Set dynamic image
-            if (module.getModuleName().equalsIgnoreCase("CPR")) {
-                intent.putExtra("MODULE_IMAGE", R.drawable.cpr_image);
-            } else if (module.getModuleName().equalsIgnoreCase("Bleeding Management")) {
-                intent.putExtra("MODULE_IMAGE", R.drawable.bleeding_image);
-            } else {
-                intent.putExtra("MODULE_IMAGE", R.drawable.ic_modules);
-            }
-
-            context.startActivity(intent);
-        });
     }
-
 
     @Override
     public int getItemCount() {
         return moduleList.size();
     }
 
+    public void setModules(List<Module> updatedModules) {
+        this.moduleList = updatedModules;
+    }
+
+    private String formatAccessedDate(String date) {
+        return (date == null || date.isEmpty()) ? "Not accessed yet" : "Last accessed: " + date;
+    }
+
+    private void setStatusUI(ModuleViewHolder holder, Module module) {
+        int colorId;
+        String statusText;
+        String buttonText;
+
+        switch (module.getCompletionStatus()) {
+            case "Not Started":
+                statusText = "❌ Not Started";
+                colorId = R.color.module_not_started;
+                buttonText = "Start Learning";
+                break;
+            case "In Progress":
+                statusText = "🕒 In Progress";
+                colorId = R.color.module_in_progress;
+                buttonText = "Continue Learning";
+                break;
+            case "Completed":
+                statusText = "✅ Completed";
+                colorId = R.color.module_completed;
+                buttonText = "Finished";
+                break;
+            default:
+                statusText = module.getCompletionStatus();
+                colorId = R.color.gray;
+                buttonText = "Start";
+        }
+
+        holder.tvModuleStatus.setText(statusText);
+        holder.tvModuleStatus.setBackgroundColor(ContextCompat.getColor(context, colorId));
+        holder.btnContinueModule.setText(buttonText);
+    }
+
+    private void setupLockedState(ModuleViewHolder holder) {
+        holder.btnContinueModule.setText("Locked 🔒");
+        holder.btnContinueModule.setEnabled(false);
+        holder.btnContinueModule.setBackgroundColor(ContextCompat.getColor(context, R.color.module_locked));
+
+        // Dim the entire card view
+        holder.itemView.setAlpha(0.5f);
+
+        // Show a toast on click
+        holder.btnContinueModule.setOnClickListener(v ->
+                Toast.makeText(context, "Complete the previous module to unlock this.", Toast.LENGTH_SHORT).show());
+
+        // Tooltip on long press (entire card)
+        holder.itemView.setOnLongClickListener(v -> {
+            Toast.makeText(context, "Unlock this by completing the previous module.", Toast.LENGTH_LONG).show();
+            return true;
+        });
+    }
+
+
+    private void setupUnlockedState(ModuleViewHolder holder, Module module, int progress) {
+        holder.itemView.setAlpha(1f); // Restore full opacity
+
+        holder.btnContinueModule.setEnabled(true);
+        holder.btnContinueModule.setBackgroundColor(ContextCompat.getColor(context, R.color.red));
+
+        // Remove long click listener if previously set
+        holder.itemView.setOnLongClickListener(null);
+
+        holder.btnContinueModule.setOnClickListener(v -> {
+            String currentDate = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(new Date());
+
+            ModuleDAO moduleDAO = new ModuleDAO(context);
+            moduleDAO.updateLastAccessed(module.getModuleID(), currentDate);
+            module.setAccessedDate(currentDate);
+            holder.tvAccessedDate.setText("Last accessed: " + currentDate);
+
+            if ("Not Started".equals(module.getCompletionStatus())) {
+                module.setCompletionStatus("In Progress");
+                moduleDAO.updateCompletionStatus(module.getModuleID(), "In Progress");
+                setStatusUI(holder, module);
+            }
+
+            Intent intent = createModuleIntent(module);
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Resume Module?")
+                    .setMessage("You have completed " + progress + "% of this module. Would you like to resume?")
+                    .setPositiveButton("Resume", (dialog, which) -> startActivity(intent, true))
+                    .setNegativeButton("Start Over", (dialog, which) -> startActivity(intent, false))
+                    .show();
+        });
+    }
+
+
+    private Intent createModuleIntent(Module module) {
+        Intent intent = new Intent(context, ModuleOverviewActivity.class);
+        intent.putExtra("MODULE_ID", module.getModuleID());
+        intent.putExtra("MODULE_TITLE", module.getModuleName());
+        intent.putExtra("MODULE_DESCRIPTION", module.getDescription());
+
+        int imageRes;
+        switch (module.getModuleName().toLowerCase()) {
+            case "cpr":
+                imageRes = R.drawable.cpr_image;
+                break;
+            case "bleeding management":
+                imageRes = R.drawable.bleeding_image;
+                break;
+            default:
+                imageRes = R.drawable.ic_modules;
+        }
+        intent.putExtra("MODULE_IMAGE", imageRes);
+
+        return intent;
+    }
+
+    private void startActivity(Intent intent, boolean slide) {
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(
+                    slide ? android.R.anim.slide_in_left : android.R.anim.fade_in,
+                    slide ? android.R.anim.slide_out_right : android.R.anim.fade_out
+            );
+        }
+    }
+
     public static class ModuleViewHolder extends RecyclerView.ViewHolder {
-        TextView tvModuleName, tvAccessedDate, tvModuleDescription, tvDifficulty, tvDuration, tvAssessments, tvCompletionCriteria;
+        TextView tvModuleName, tvAccessedDate, tvModuleDescription, tvDifficulty,
+                tvDuration, tvAssessments, tvCompletionCriteria, tvModuleProgress, tvModuleStatus;
         ProgressBar progressBar;
         Button btnContinueModule;
 
@@ -119,6 +210,8 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
             tvDuration = itemView.findViewById(R.id.tvDuration);
             tvAssessments = itemView.findViewById(R.id.tvAssessments);
             tvCompletionCriteria = itemView.findViewById(R.id.tvCompletionCriteria);
+            tvModuleProgress = itemView.findViewById(R.id.tvModuleProgress);
+            tvModuleStatus = itemView.findViewById(R.id.tvModuleStatus);
             progressBar = itemView.findViewById(R.id.progressBar);
             btnContinueModule = itemView.findViewById(R.id.btnContinueModule);
         }

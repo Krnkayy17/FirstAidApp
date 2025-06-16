@@ -97,7 +97,9 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(1), // UserName
                     cursor.getString(2), // UserEmail
                     cursor.getString(3), // UserPhoneNum
-                    cursor.getString(4)  // UserPassword
+                    cursor.getString(4),  // UserPassword
+                    cursor.getString(5), // UserType
+                    cursor.getString(6) // UserImage
             );
             cursor.close();
             db.close();

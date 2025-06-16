@@ -9,9 +9,30 @@ public class Module {
     private int totalAssessments;
     private String completionCriteria;
     private String accessedDate;
-    private String completionStatus;  // New Field
+    private String completionStatus;
+    private int progressPercentage;
+    private boolean isLocked;
 
-    public Module(int moduleID, String moduleName, String description, String difficultyLevel, int estimatedDuration, int totalAssessments, String completionCriteria, String accessedDate, String completionStatus) {
+    public Module() {
+        // Optional: set default values if needed
+        this.completionStatus = "Not Started";
+        this.progressPercentage = 0;
+        this.isLocked = false;
+    }
+
+    public Module(
+            int moduleID,
+            String moduleName,
+            String description,
+            String difficultyLevel,
+            int estimatedDuration,
+            int totalAssessments,
+            String completionCriteria,
+            String accessedDate,
+            String completionStatus,
+            int progressPercentage,
+            boolean isLocked
+    ) {
         this.moduleID = moduleID;
         this.moduleName = moduleName;
         this.description = description;
@@ -21,6 +42,8 @@ public class Module {
         this.completionCriteria = completionCriteria;
         this.accessedDate = accessedDate;
         this.completionStatus = completionStatus;
+        this.progressPercentage = progressPercentage;
+        this.isLocked = isLocked;
     }
 
     // Getters
@@ -60,15 +83,56 @@ public class Module {
         return completionStatus;
     }
 
+    public int getProgressPercentage() {
+        return progressPercentage;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
     // Setters
-    public void setCompletionStatus(String completionStatus) {
-        this.completionStatus = completionStatus;
+    public void setModuleID(int moduleID) {
+        this.moduleID = moduleID;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDifficultyLevel(String difficultyLevel) {
+        this.difficultyLevel = difficultyLevel;
+    }
+
+    public void setEstimatedDuration(int estimatedDuration) {
+        this.estimatedDuration = estimatedDuration;
+    }
+
+    public void setTotalAssessments(int totalAssessments) {
+        this.totalAssessments = totalAssessments;
+    }
+
+    public void setCompletionCriteria(String completionCriteria) {
+        this.completionCriteria = completionCriteria;
     }
 
     public void setAccessedDate(String accessedDate) {
         this.accessedDate = accessedDate;
     }
 
+    public void setCompletionStatus(String completionStatus) {
+        this.completionStatus = completionStatus;
+    }
+
+    public void setProgressPercentage(int progressPercentage) {
+        this.progressPercentage = progressPercentage;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
 }
-
-

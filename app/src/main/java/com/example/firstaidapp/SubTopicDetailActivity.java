@@ -1,82 +1,250 @@
 package com.example.firstaidapp;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Html;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.example.firstaidapp.database.ContentDAO;
-import com.example.firstaidapp.database.FirstAidDatabaseHelper;
-import com.example.firstaidapp.models.Content;
-
+import android.widget.*;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import com.example.firstaidapp.database.ContentDAO;
+import com.example.firstaidapp.database.ModuleDAO;
+import com.example.firstaidapp.database.ModuleProgressDAO;
+import com.example.firstaidapp.models.Content;
+import com.example.firstaidapp.database.UserContentViewDAO;
+import com.example.firstaidapp.utils.SessionManager;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 
 public class SubTopicDetailActivity extends AppCompatActivity {
 
-    private TextView detailTitle, detailText, detailUrl;
-    private ImageView detailImage;
-    private Button nextButton;
+    private TextView detailTitle, tvContentProgress;
+    private Button nextButton, previousButton;
+    private LinearLayout contentContainer;
+    private ProgressBar contentProgressBar;
+    private FloatingActionButton btnTakeQuiz;
 
     private int moduleId;
     private int contentOrder;
     private ContentDAO contentDAO;
+    private UserContentViewDAO userContentViewDAO;
+    private ModuleDAO moduleDAO;
+    private int userId;
+    private ModuleProgressDAO moduleProgressDAO;
+
+
+    private FirebaseAnalytics firebaseAnalytics;
+
+    private int totalContentCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub_topic_detail);
 
+        // Session and DAOs
+        SessionManager sessionManager = new SessionManager(this);
+        userId = sessionManager.getUserId();
+
+        userContentViewDAO = new UserContentViewDAO(this);
+        moduleDAO = new ModuleDAO(this);
+        contentDAO = new ContentDAO(this);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        // UI binding
         detailTitle = findViewById(R.id.detailTitle);
-        detailText = findViewById(R.id.detailText);
-        detailImage = findViewById(R.id.detailImage);
-        detailUrl = findViewById(R.id.detailUrl);
+        tvContentProgress = findViewById(R.id.tvContentProgress);
+        contentProgressBar = findViewById(R.id.contentProgressBar);
+        contentContainer = findViewById(R.id.contentContainer);
         nextButton = findViewById(R.id.nextButton);
+        previousButton = findViewById(R.id.previousButton);
+        btnTakeQuiz = findViewById(R.id.btnTakeQuiz);
+        moduleProgressDAO = new ModuleProgressDAO(this, userId);
 
-        contentDAO = new ContentDAO(new FirstAidDatabaseHelper(this));
+        // Get extras
+        moduleId = getIntent().getIntExtra("MODULE_ID", -1);
+        totalContentCount = contentDAO.getAllContentsByModule(moduleId).size();
 
-        // Get data from Intent
-        Intent intent = getIntent();
-        String title = intent.getStringExtra("CONTENT_TITLE");
-        String text = intent.getStringExtra("CONTENT_TEXT");
-        String imageUrl = intent.getStringExtra("CONTENT_IMAGE");
-        String url = intent.getStringExtra("CONTENT_URL");
-        moduleId = intent.getIntExtra("MODULE_ID", -1);
-        contentOrder = intent.getIntExtra("CONTENT_ORDER", -1);
+        int lastViewed = userContentViewDAO.getLastViewedOrder(userId, moduleId);
+        if (lastViewed > 1) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Resume Learning?")
+                    .setMessage("Would you like to continue from where you left off?")
+                    .setPositiveButton("Yes", (dialog, which) -> displaySection(lastViewed))
+                    .setNegativeButton("No", (dialog, which) -> displaySection(1))
+                    .show();
+        } else {
+            displaySection(1);
+        }
 
-        detailTitle.setText(title);
-        detailText.setText(text);
+        btnTakeQuiz.setOnClickListener(v -> {
+            Intent intent = new Intent(SubTopicDetailActivity.this, QuizActivity.class);
+            intent.putExtra("MODULE_ID", moduleId);
+            startActivity(intent);
+        });
+    }
 
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            @SuppressLint("DiscouragedApi") int imageResId = getResources().getIdentifier(imageUrl, "drawable", getPackageName());
-            if (imageResId != 0) {
-                Glide.with(this)
-                        .load(imageResId)
-                        .override(1024, 1024)
-                        .centerInside()
-                        .into(detailImage);
-                detailImage.setVisibility(View.VISIBLE);
-            } else {
-                detailImage.setVisibility(View.GONE); // or load a placeholder image
+    private void displaySection(int order) {
+        contentOrder = order;
+        contentContainer.removeAllViews();
+
+        List<Content> sectionContent = contentDAO.getContentsByModuleAndOrder(moduleId, contentOrder);
+        if (sectionContent == null || sectionContent.isEmpty()) {
+            Toast.makeText(this, "No content for this section", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        for (Content content : sectionContent) {
+            if (content.getContentTitle() != null && !content.getContentTitle().isEmpty()) {
+                detailTitle.setText(content.getContentTitle());
+                break;
             }
-        } else {
-            detailImage.setVisibility(View.GONE);
         }
 
+        for (Content content : sectionContent) {
+            userContentViewDAO.markContentAsViewed(userId, content.getContentId(), moduleId);
 
-        if (url != null && !url.isEmpty()) {
-            detailUrl.setText("More Info: " + url);
-            detailUrl.setVisibility(View.VISIBLE);
-        } else {
-            detailUrl.setVisibility(View.GONE);
+            logFirebaseContentView(content);
+
+            switch (content.getContentType()) {
+                case "text":
+                    if (content.getContentText() != null) addTextView(content.getContentText());
+                    break;
+                case "image":
+                    if (content.getContentImage() != null) addImageView(content.getContentImage());
+                    break;
+                case "video":
+                    if (content.getContentURL() != null) addVideoLink(content.getContentURL());
+                    break;
+            }
         }
 
+        updateProgressUI();
+        handleNavigation();
+    }
+
+    private void updateProgressUI() {
+        ModuleProgressDAO moduleProgressDAO = new ModuleProgressDAO(this, userId);
+        moduleProgressDAO.updateProgressAndCompletion(moduleId);
+
+        // Update UI after logic
+        int viewedCount = userContentViewDAO.getViewedCountForModule(userId, moduleId);
+        int totalCount = contentDAO.getAllContentsByModule(moduleId).size();
+        int percent = (int) ((viewedCount / (float) totalCount) * 100);
+
+        tvContentProgress.setText("Progress: " + viewedCount + " / " + totalCount);
+        contentProgressBar.setProgress(percent);
+
+        btnTakeQuiz.setVisibility(viewedCount >= totalCount ? View.VISIBLE : View.GONE);
+
+
+    }
+
+    private void handleNavigation() {
+        nextButton.setOnClickListener(view -> {
+            int nextOrder = getNextOrder(contentOrder);
+            if (nextOrder != -1) {
+                displaySection(nextOrder);
+            } else {
+                showStartQuizDialog();
+            }
+        });
+
+        previousButton.setOnClickListener(view -> {
+            int prevOrder = getPreviousOrder(contentOrder);
+            if (prevOrder != -1) {
+                displaySection(prevOrder);
+            } else {
+                Toast.makeText(this, "You're already at the first section.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showStartQuizDialog() {
+        int viewedCount = userContentViewDAO.getViewedCountForModule(userId, moduleId);
+        boolean moduleCompleted = viewedCount >= totalContentCount;
+
+        moduleProgressDAO.updateProgressAndCompletion(moduleId);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Module Complete!")
+                .setMessage("You've finished the module. Would you like to take the quiz now?")
+                .setPositiveButton("Start Quiz", (dialog, which) -> {
+                    Intent intent = new Intent(SubTopicDetailActivity.this, QuizActivity.class);
+                    intent.putExtra("MODULE_ID", moduleId);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Later", (dialog, which) -> {
+                    Toast.makeText(this, "You can take the quiz anytime from the module page.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(SubTopicDetailActivity.this, ModuleActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .show();
+    }
+
+    private int getNextOrder(int currentOrder) {
+        List<Integer> orders = contentDAO.getAllOrdersForModule(moduleId);
+        int index = orders.indexOf(currentOrder);
+        return (index != -1 && index + 1 < orders.size()) ? orders.get(index + 1) : -1;
+    }
+
+    private int getPreviousOrder(int currentOrder) {
+        List<Integer> orders = contentDAO.getAllOrdersForModule(moduleId);
+        int index = orders.indexOf(currentOrder);
+        return (index > 0) ? orders.get(index - 1) : -1;
+    }
+
+    private void addTextView(String text) {
+        TextView textView = new TextView(this);
+        textView.setText(text);
+        textView.setTextSize(16);
+        textView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+        textView.setLayoutParams(getDefaultLayoutParams());
+        contentContainer.addView(textView);
+    }
+
+    private void addImageView(String imageName) {
+        int resId = getResources().getIdentifier(imageName, "drawable", getPackageName());
+        if (resId != 0) {
+            ImageView imageView = new ImageView(this);
+            imageView.setImageResource(resId);
+            imageView.setAdjustViewBounds(true);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            imageView.setLayoutParams(getDefaultLayoutParams());
+            contentContainer.addView(imageView);
+        }
+    }
+
+    private void addVideoLink(String url) {
+        TextView link = new TextView(this);
+        link.setText(Html.fromHtml("<a href=\"" + url + "\">Watch video</a>"));
+        link.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+        link.setTextColor(ContextCompat.getColor(this, android.R.color.holo_blue_dark));
+        link.setLayoutParams(getDefaultLayoutParams());
+        contentContainer.addView(link);
+    }
+
+    private LinearLayout.LayoutParams getDefaultLayoutParams() {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 16, 0, 16);
+        return params;
+    }
+
+    private void logFirebaseContentView(Content content) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "content_" + content.getContentId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, content.getContentTitle());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, content.getContentType());
+        firebaseAnalytics.logEvent("content_viewed", bundle);
     }
 }

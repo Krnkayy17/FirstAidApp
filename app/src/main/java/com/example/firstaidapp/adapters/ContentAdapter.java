@@ -2,30 +2,45 @@ package com.example.firstaidapp.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide; // Make sure to add Glide to your dependencies
 import com.example.firstaidapp.R;
 import com.example.firstaidapp.SubTopicDetailActivity;
 import com.example.firstaidapp.models.Content;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentViewHolder> {
 
-    private List<Content> contentList;
-    private Context context;
+    private final Context context;
+    private final List<Content> sectionList; // One entry per contentOrder group
 
-    public ContentAdapter(Context context, List<Content> contentList) {
+    public ContentAdapter(Context context, List<Content> allContent) {
         this.context = context;
-        this.contentList = contentList;
+        this.sectionList = new ArrayList<>();
+
+        // Use HashSet to track which contentOrder we've already added
+        Set<Integer> seenOrders = new HashSet<>();
+
+        for (Content content : allContent) {
+            int order = content.getContentOrder();
+            String title = content.getContentTitle();
+
+            // Only add one item per section (order) with a non-empty title
+            if (!seenOrders.contains(order) && title != null && !title.trim().isEmpty()) {
+                sectionList.add(content);
+                seenOrders.add(order);
+            }
+        }
     }
 
     @NonNull
@@ -37,22 +52,20 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
 
     @Override
     public void onBindViewHolder(@NonNull ContentViewHolder holder, int position) {
-        Content content = contentList.get(position);
+        Content content = sectionList.get(position);
         holder.tvContentTitle.setText(content.getContentTitle());
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, SubTopicDetailActivity.class);
-            intent.putExtra("CONTENT_TITLE", content.getContentTitle());
-            intent.putExtra("CONTENT_TEXT", content.getContentText());
-            intent.putExtra("CONTENT_IMAGE", content.getContentImage());
-            intent.putExtra("CONTENT_URL", content.getContentURL());
+            intent.putExtra("MODULE_ID", content.getModuleId());
+            intent.putExtra("CONTENT_ORDER", content.getContentOrder());
             context.startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
-        return contentList.size();
+        return sectionList.size();
     }
 
     public static class ContentViewHolder extends RecyclerView.ViewHolder {

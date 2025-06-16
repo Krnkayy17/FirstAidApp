@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:konfetti="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 🎊 Confetti Layer -->
+    <nl.dionsegijn.konfetti.xml.KonfettiView
+        android:id="@+id/view_confetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!-- Main Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tv_module_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Module Results"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#2E7D32"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/tv_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Score: 7/10"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_percentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Percentage: 70%"
+                android:textSize="18sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_time_taken"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time Taken: 02:35"
+                android:textSize="16sp"
+                android:textColor="#777777"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tv_feedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feedback"
+                android:textSize="18sp"
+                android:textColor="#444444"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
+
+            <Button
+                android:id="@+id/btn_review_answers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Review Answers"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btn_retake"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Retake Quiz"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btn_back_home"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Back to Modules" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

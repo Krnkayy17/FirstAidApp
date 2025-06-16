@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">First Aid App</string>
     <string name="quiz_question_format">Question %1$d of %2$d</string>
+
+    <string-array name="filter_options">
+        <item>All</item>
+        <item>Completed</item>
+        <item>In Progress</item>
+        <item>Not Started</item>
+    </string-array>
+
 </resources>

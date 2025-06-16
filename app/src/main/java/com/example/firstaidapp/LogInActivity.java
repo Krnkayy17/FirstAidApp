@@ -1,16 +1,18 @@
 package com.example.firstaidapp;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.firstaidapp.database.FirstAidDatabaseHelper;
 import com.example.firstaidapp.database.UserDAO;
 import com.example.firstaidapp.models.User;
+import com.example.firstaidapp.utils.SessionManager;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -24,15 +26,20 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
+        // Initialize views
         editTextEmail = findViewById(R.id.text_email);
         editTextPassword = findViewById(R.id.text_pwd);
         buttonLogin = findViewById(R.id.btn_login);
         signUpText = findViewById(R.id.go_tp_signup);
 
+        // Initialize database and DAO
         FirstAidDatabaseHelper dbHelper = new FirstAidDatabaseHelper(this);
-        userDAO = new UserDAO(dbHelper);
+        userDAO = new UserDAO(this);
 
+        // Login button click
         buttonLogin.setOnClickListener(view -> loginUser());
+
+        // Sign up link click
         signUpText.setOnClickListener(v -> startActivity(new Intent(LogInActivity.this, SignUpActivity.class)));
     }
 
@@ -48,21 +55,22 @@ public class LogInActivity extends AppCompatActivity {
         User user = userDAO.getUserByCredentials(email, password);
         if (user != null) {
             Toast.makeText(this, "Login successful! Welcome, " + user.getUserName(), Toast.LENGTH_SHORT).show();
-            saveUserSession(user);
+
+            SessionManager sessionManager = new SessionManager(this);
+            sessionManager.saveUserSession(
+                    user.getUserId(),
+                    user.getUserName(),
+                    user.getUserEmail(),
+                    user.getUserPhoneNum(),
+                    user.getUserType(),
+                    user.getUserImage()
+            );
+
+            // Redirect to home
             startActivity(new Intent(this, HomeActivity.class));
             finish();
         } else {
             Toast.makeText(this, "Invalid email or password!", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void saveUserSession(User user) {
-        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("UserID", user.getUserId());
-        editor.putString("UserName", user.getUserName());
-        editor.putString("UserEmail", user.getUserEmail());
-        editor.putString("UserPhoneNum", user.getUserPhoneNum());
-        editor.apply();
     }
 }

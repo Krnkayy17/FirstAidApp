@@ -6,29 +6,66 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/imageSliderRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:overScrollMode="never"/>
+
+
+    <!-- Dots -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/sliderDots"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Home Page"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
+        android:layout_below="@id/imageSliderRecycler"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="4dp"
+        app:tabIndicatorColor="@android:color/transparent"
+        app:tabSelectedTextColor="@color/red"
+        app:tabTextColor="@android:color/darker_gray" />
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <!-- Dynamic Module List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerHomeModules"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_navigation">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sliderDots"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="10dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:overScrollMode="never" />
 
-    </FrameLayout>
 
+    <!-- Fun Facts -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/funFactRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recyclerHomeModules"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="60dp"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:overScrollMode="never" />
+
+
+    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFF5F5"
         android:layout_alignParentBottom="true"
+        android:background="@color/nav_background"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="selected"
-        app:itemIconTint="@color/nav_item_color"/>
+        app:itemIconTint="@color/nav_selector"
+        app:itemTextColor="@color/nav_selector" />
 
 </RelativeLayout>

@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModuleDAO {
-    private SQLiteDatabase db;
-    private FirstAidDatabaseHelper dbHelper;
+
+    private final SQLiteDatabase db;
+    private final FirstAidDatabaseHelper dbHelper;
 
     public ModuleDAO(Context context) {
         dbHelper = new FirstAidDatabaseHelper(context);
-        db = dbHelper.getWritableDatabase(); // Auto-open DB
+        db = dbHelper.getWritableDatabase();
     }
 
     public long addModule(Module module) {
@@ -29,12 +30,14 @@ public class ModuleDAO {
         values.put(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA, module.getCompletionCriteria());
         values.put(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE, module.getAccessedDate());
         values.put(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS, module.getCompletionStatus());
-
+        values.put(FirstAidDatabaseHelper.COLUMN_PROGRESS_PERCENTAGE, module.getProgressPercentage());
+        values.put(FirstAidDatabaseHelper.COLUMN_IS_LOCKED, module.isLocked() ? 1 : 0);
         return db.insert(FirstAidDatabaseHelper.TABLE_MODULE, null, values);
     }
 
     public List<Module> getAllModules() {
         List<Module> moduleList = new ArrayList<>();
+
         Cursor cursor = db.query(
                 FirstAidDatabaseHelper.TABLE_MODULE,
                 null, null, null, null, null, null
@@ -51,7 +54,9 @@ public class ModuleDAO {
                         cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS)),
                         cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA)),
                         cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS))
+                        cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_PROGRESS_PERCENTAGE)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_IS_LOCKED)) == 1
                 );
                 moduleList.add(module);
             } while (cursor.moveToNext());
@@ -59,30 +64,6 @@ public class ModuleDAO {
 
         cursor.close();
         return moduleList;
-    }
-
-    public void updateLastAccessed(int moduleID, String lastAccessedDate) {
-        ContentValues values = new ContentValues();
-        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE, lastAccessedDate);
-
-        db.update(
-                FirstAidDatabaseHelper.TABLE_MODULE,
-                values,
-                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
-                new String[]{String.valueOf(moduleID)}
-        );
-    }
-
-    public void updateCompletionStatus(int moduleID, String status) {
-        ContentValues values = new ContentValues();
-        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS, status);
-
-        db.update(
-                FirstAidDatabaseHelper.TABLE_MODULE,
-                values,
-                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
-                new String[]{String.valueOf(moduleID)}
-        );
     }
 
     public Module getModuleById(int id) {
@@ -104,7 +85,9 @@ public class ModuleDAO {
                     cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_TOTAL_ASSESSMENTS)),
                     cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_CRITERIA)),
                     cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS))
+                    cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_PROGRESS_PERCENTAGE)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_IS_LOCKED)) == 1
             );
             cursor.close();
             return module;
@@ -112,10 +95,62 @@ public class ModuleDAO {
         return null;
     }
 
+    public void updateLastAccessed(int moduleId, String lastAccessedDate) {
+        ContentValues values = new ContentValues();
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_ACCESSED_DATE, lastAccessedDate);
+
+        db.update(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                values,
+                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
+                new String[]{String.valueOf(moduleId)}
+        );
+    }
+
+    public void updateCompletionStatus(int moduleId, String status) {
+        ContentValues values = new ContentValues();
+        values.put(FirstAidDatabaseHelper.COLUMN_MODULE_COMPLETION_STATUS, status);
+
+        db.update(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                values,
+                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
+                new String[]{String.valueOf(moduleId)}
+        );
+    }
+
+    public void updateProgressPercentage(int moduleId, int percentage) {
+        ContentValues values = new ContentValues();
+        values.put(FirstAidDatabaseHelper.COLUMN_PROGRESS_PERCENTAGE, percentage);
+
+        db.update(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                values,
+                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
+                new String[]{String.valueOf(moduleId)}
+        );
+    }
+
+    public void updateLockStatus(int moduleId, boolean locked) {
+        ContentValues values = new ContentValues();
+        values.put(FirstAidDatabaseHelper.COLUMN_IS_LOCKED, locked ? 1 : 0);
+
+        db.update(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                values,
+                FirstAidDatabaseHelper.COLUMN_MODULE_ID + "=?",
+                new String[]{String.valueOf(moduleId)}
+        );
+    }
 
     public int getModuleProgress(int moduleId) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT progress FROM MODULE WHERE id = ?", new String[]{String.valueOf(moduleId)});
+        Cursor cursor = db.rawQuery(
+                "SELECT " + FirstAidDatabaseHelper.COLUMN_PROGRESS_PERCENTAGE +
+                        " FROM " + FirstAidDatabaseHelper.TABLE_MODULE +
+                        " WHERE " + FirstAidDatabaseHelper.COLUMN_MODULE_ID + " = ?",
+                new String[]{String.valueOf(moduleId)}
+        );
+
         int progress = 0;
         if (cursor.moveToFirst()) {
             progress = cursor.getInt(0);
@@ -123,5 +158,4 @@ public class ModuleDAO {
         cursor.close();
         return progress;
     }
-
 }

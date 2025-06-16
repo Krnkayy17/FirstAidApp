@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button buttonCreateAccount;
     private TextView goToLogin;
     private UserDAO userDAO;
+    private RadioGroup radioUserType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,13 +25,14 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         FirstAidDatabaseHelper dbHelper = new FirstAidDatabaseHelper(this);
-        userDAO = new UserDAO(dbHelper);
+        userDAO = new UserDAO(this);
 
         editTextName = findViewById(R.id.editTextName);
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPhone = findViewById(R.id.editTextPhone);
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
+        radioUserType = findViewById(R.id.radioUserType);
         buttonCreateAccount = findViewById(R.id.buttonCreateAccount);
         goToLogin = findViewById(R.id.go_to_login);
 
@@ -47,6 +50,8 @@ public class SignUpActivity extends AppCompatActivity {
         String phone = editTextPhone.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
         String confirmPassword = editTextConfirmPassword.getText().toString().trim();
+        int selectedTypeId = radioUserType.getCheckedRadioButtonId();
+        String userType = (selectedTypeId == R.id.radioVolunteer) ? "volunteer" : "general";
 
         if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields!", Toast.LENGTH_SHORT).show();
@@ -63,7 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        if (userDAO.insertUser(name, email, phone, password)) {
+        if (userDAO.insertUser(name, email, phone, password, userType, null)) {
             Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LogInActivity.class));
             finish();

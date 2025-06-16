@@ -67,13 +67,13 @@ public class ContentDatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_CONTENT, null, values);
     }
 
-    public List<Content> getContentByModule(int moduleID) {
-        List<Content> contentList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_CONTENT + " WHERE " + COLUMN_MODULE_ID + " = ? ORDER BY " + COLUMN_CONTENT_ORDER + " ASC";
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(moduleID)});
+    //public List<Content> getContentByModule(int moduleID) {
+      //  List<Content> contentList = new ArrayList<>();
+     //   SQLiteDatabase db = this.getReadableDatabase();
+     //   String query = "SELECT * FROM " + TABLE_CONTENT + " WHERE " + COLUMN_MODULE_ID + " = ? ORDER BY " + COLUMN_CONTENT_ORDER + " ASC";
+     //  Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(moduleID)});
 
-        if (cursor.moveToFirst()) {
+     /*   if (cursor.moveToFirst()) {
             do {
                 Content content = new Content(
                         cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CONTENT_ID)),
@@ -86,12 +86,12 @@ public class ContentDatabaseHelper extends SQLiteOpenHelper {
                 );
                 contentList.add(content);
             } while (cursor.moveToNext());
-        }
+        }*/
 
-        cursor.close();
+   /*     cursor.close();
         db.close();
         return contentList;
-    }
+    }*/
 
    /* public Content getNextSubtopic(int moduleID, int currentOrder) {
         SQLiteDatabase db = this.getReadableDatabase();
