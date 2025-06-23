@@ -1,62 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".HomeActivity">
+    android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/imageSliderRecycler"
+    <!-- Scrollable content -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="8dp"
-        android:clipToPadding="false"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:overScrollMode="never"/>
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation"
+        android:fillViewport="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="80dp"> <!-- Leave room for bottom nav -->
 
-    <!-- Dots -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/sliderDots"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/imageSliderRecycler"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="4dp"
-        app:tabIndicatorColor="@android:color/transparent"
-        app:tabSelectedTextColor="@color/red"
-        app:tabTextColor="@android:color/darker_gray" />
+            <!-- Image Slider -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/imageSliderRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:clipToPadding="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:overScrollMode="never" />
 
-    <!-- Dynamic Module List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerHomeModules"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/sliderDots"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="10dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:overScrollMode="never" />
+            <!-- Dots -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/sliderDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                app:tabIndicatorColor="@android:color/transparent"
+                app:tabSelectedTextColor="@color/red"
+                app:tabTextColor="@android:color/darker_gray" />
 
+            <!-- Smart Feed -->
+            <TextView
+                android:id="@+id/tvSmartFeedTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="16dp"
+                android:text="Recommended for You"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-    <!-- Fun Facts -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/funFactRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/recyclerHomeModules"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="60dp"
-        android:clipToPadding="false"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:overScrollMode="never" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSmartFeed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clipToPadding="false"
+                android:overScrollMode="never" />
 
+            <!-- See All Videos Button -->
+            <Button
+                android:id="@+id/btnSeeAllVideos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="See All Recommended Videos"
+                android:layout_below="@id/recyclerSmartFeed"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="12dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/rounded_button"
+                android:textColor="@android:color/white" />
 
-    <!-- Bottom Navigation -->
+            <!-- Module List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerHomeModules"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:overScrollMode="never" />
+
+            <!-- Fun Facts -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/funFactRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:clipToPadding="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:overScrollMode="never" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Fixed Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
@@ -67,5 +108,4 @@
         app:labelVisibilityMode="selected"
         app:itemIconTint="@color/nav_selector"
         app:itemTextColor="@color/nav_selector" />
-
 </RelativeLayout>

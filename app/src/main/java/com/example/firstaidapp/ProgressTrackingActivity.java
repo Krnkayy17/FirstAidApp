@@ -56,7 +56,7 @@ public class ProgressTrackingActivity extends AppCompatActivity {
             title.setText(module.getModuleName());
             badge.setVisibility(View.GONE); // default
 
-            AssessmentResult result = resultDAO.getResult(userId, module.getModuleID());
+            AssessmentResult result = resultDAO.getLatestResult(userId, module.getModuleID());
             int progress = 0;
             String statusText = "Not Started";
 

@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class FirstAidDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "FirstAidApp.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 14;
 
     // Table names
     public static final String TABLE_USER = "USER";
@@ -25,7 +25,6 @@ public class FirstAidDatabaseHelper extends SQLiteOpenHelper {
     // USER Table
     public static final String COLUMN_USER_NAME = "UserName";
     public static final String COLUMN_USER_EMAIL = "UserEmail";
-    public static final String COLUMN_USER_PHONE = "UserPhoneNum";
     public static final String COLUMN_USER_PASSWORD = "UserPassword";
     public static final String COLUMN_USER_TYPE = "UserType";
     public static final String COLUMN_USER_IMAGE = "UserImage";
@@ -78,6 +77,26 @@ public class FirstAidDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_IS_CORRECT = "IsCorrect";
     public static final String COLUMN_DATE_ANSWERED = "DateAnswered";
 
+    //VIDEO_RECOMMENDATION Table
+    public static final String TABLE_VIDEO_RECOMMENDATIONS = "video_recommendations";
+    public static final String COLUMN_VIDEO_ID = "id";
+    public static final String COLUMN_VIDEO_MODULE_ID = "module_id";
+    public static final String COLUMN_VIDEO_TITLE = "title";
+    public static final String COLUMN_VIDEO_URL = "url";
+    public static final String COLUMN_VIDEO_THUMBNAIL_URL = "thumbnail_url";
+    public static final String COLUMN_VIDEO_TAG = "tag";
+
+    // VIDEO_CLICK_LOG Table
+    public static final String TABLE_VIDEO_CLICK_LOG = "video_click_log";
+    public static final String COLUMN_CLICK_LOG_ID = "id";
+    public static final String COLUMN_CLICK_MODULE_ID = "module_id";
+    public static final String COLUMN_CLICK_VIDEO_TITLE = "video_title";
+    public static final String COLUMN_CLICK_YOUTUBE_ID = "youtube_video_id";
+    public static final String COLUMN_CLICK_TIMESTAMP = "timestamp";
+    public static final String COLUMN_CLICK_TAG = "tag";
+
+
+
     private final Context context;
 
     public FirstAidDatabaseHelper(Context context) {
@@ -92,7 +111,6 @@ public class FirstAidDatabaseHelper extends SQLiteOpenHelper {
                         COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         COLUMN_USER_NAME + " TEXT, " +
                         COLUMN_USER_EMAIL + " TEXT UNIQUE, " +
-                        COLUMN_USER_PHONE + " TEXT, " +
                         COLUMN_USER_PASSWORD + " TEXT, " +
                         COLUMN_USER_TYPE + " TEXT DEFAULT 'general', " +
                         COLUMN_USER_IMAGE + " TEXT)"
@@ -181,15 +199,76 @@ public class FirstAidDatabaseHelper extends SQLiteOpenHelper {
                         "FOREIGN KEY(" + COLUMN_QUESTION_ID + ") REFERENCES " + TABLE_QUESTION + "(" + COLUMN_QUESTION_ID + "), " +
                         "FOREIGN KEY(" + COLUMN_MODULE_ID + ") REFERENCES " + TABLE_MODULE + "(" + COLUMN_MODULE_ID + "))"
         );
+
+        db.execSQL(
+                "CREATE TABLE " + TABLE_VIDEO_RECOMMENDATIONS + " (" +
+                        COLUMN_VIDEO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_VIDEO_MODULE_ID + " INTEGER, " +
+                        COLUMN_VIDEO_TITLE + " TEXT NOT NULL, " +
+                        COLUMN_VIDEO_URL + " TEXT NOT NULL, " +
+                        COLUMN_VIDEO_THUMBNAIL_URL + " TEXT, " +
+                        COLUMN_VIDEO_TAG + " TEXT, " +
+                        "FOREIGN KEY(" + COLUMN_VIDEO_MODULE_ID + ") REFERENCES " + TABLE_MODULE + "(" + COLUMN_MODULE_ID + "))"
+        );
+
+
+        db.execSQL(
+                "CREATE TABLE " + TABLE_VIDEO_CLICK_LOG + " (" +
+                        COLUMN_CLICK_LOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_CLICK_MODULE_ID + " INTEGER, " +
+                        COLUMN_CLICK_VIDEO_TITLE + " TEXT, " +
+                        COLUMN_CLICK_YOUTUBE_ID + " TEXT, " +
+                        COLUMN_CLICK_TIMESTAMP + " TEXT, " +
+                        COLUMN_CLICK_TAG + " TEXT, " +
+                        "FOREIGN KEY(" + COLUMN_CLICK_MODULE_ID + ") REFERENCES " + TABLE_MODULE + "(" + COLUMN_MODULE_ID + "))"
+        );
+
+
+        // Insert initial video recommendations
+        new VideoRecommendationDAO(context).insertInitialVideos(db);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 9) {
-            db.execSQL("ALTER TABLE " + TABLE_MODULE + " ADD COLUMN " + COLUMN_IS_LOCKED + " INTEGER DEFAULT 0");
+            // Example: Create video_recommendations table in version 9
+            db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS " + TABLE_VIDEO_RECOMMENDATIONS + " (" +
+                            COLUMN_VIDEO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            COLUMN_VIDEO_MODULE_ID + " INTEGER, " +
+                            COLUMN_VIDEO_TITLE + " TEXT NOT NULL, " +
+                            COLUMN_VIDEO_URL + " TEXT NOT NULL, " +
+                            COLUMN_VIDEO_THUMBNAIL_URL + " TEXT, " +
+                            "FOREIGN KEY(" + COLUMN_VIDEO_MODULE_ID + ") REFERENCES " + TABLE_MODULE + "(" + COLUMN_MODULE_ID + "))"
+            );
         }
 
-        // Future upgrades can be handled with additional conditions
-        // if (oldVersion < 9) { ... }
+        if (oldVersion < 10) {
+            // Add the video_click_log table in version 10
+            db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS " + TABLE_VIDEO_CLICK_LOG + " (" +
+                            COLUMN_CLICK_LOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            COLUMN_CLICK_MODULE_ID + " INTEGER, " +
+                            COLUMN_CLICK_VIDEO_TITLE + " TEXT, " +
+                            COLUMN_CLICK_YOUTUBE_ID + " TEXT, " +
+                            COLUMN_CLICK_TIMESTAMP + " TEXT, " +
+                            "FOREIGN KEY(" + COLUMN_CLICK_MODULE_ID + ") REFERENCES " + TABLE_MODULE + "(" + COLUMN_MODULE_ID + "))"
+            );
+        }
+
+        if (oldVersion < 12) {
+            db.execSQL("ALTER TABLE " + TABLE_VIDEO_RECOMMENDATIONS + " ADD COLUMN " + COLUMN_VIDEO_TAG + " TEXT");
+        }
+        else if (oldVersion < 14) {
+            db.execSQL("ALTER TABLE " + TABLE_VIDEO_CLICK_LOG + " ADD COLUMN " + COLUMN_CLICK_TAG + " TEXT");
+        }
+
+
+
+        // Future schema upgrades can go here:
+        // if (oldVersion < 11) { ... }
     }
+
+
 }

@@ -6,13 +6,17 @@ import android.view.View;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.firstaidapp.adapters.ProgressModuleAdapter;
+import com.example.firstaidapp.analytics.FirebaseAnalyticsTracker;
+import com.example.firstaidapp.database.AssessmentResultDAO;
 import com.example.firstaidapp.database.ContentDAO;
 import com.example.firstaidapp.database.ModuleDAO;
 import com.example.firstaidapp.database.UserContentViewDAO;
+import com.example.firstaidapp.models.AssessmentResult;
 import com.example.firstaidapp.models.Module;
 import com.example.firstaidapp.utils.SessionManager;
 import com.github.mikephil.charting.charts.PieChart;
@@ -35,13 +39,23 @@ public class ProgressSummaryActivity extends AppCompatActivity {
     private ModuleDAO moduleDAO;
     private ContentDAO contentDAO;
     private UserContentViewDAO userContentViewDAO;
+    private AssessmentResultDAO resultDAO;
     private SessionManager sessionManager;
+
     private int userId;
+    private String userType;
+    private int threshold;
+
+    private FirebaseAnalyticsTracker analyticsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress_summary);
+
+        analyticsTracker = new FirebaseAnalyticsTracker(this);
+        analyticsTracker.logProgressSummaryViewed();
+
 
         // UI References
         pieChart = findViewById(R.id.pieChart);
@@ -50,18 +64,21 @@ public class ProgressSummaryActivity extends AppCompatActivity {
         recyclerModules = findViewById(R.id.recyclerModules);
         recyclerModules.setLayoutManager(new LinearLayoutManager(this));
 
-        // DAO Initialization
+        // DAO & Session setup
+        sessionManager = new SessionManager(this);
+        userId = sessionManager.getUserId();
+        userType = sessionManager.getUserType();
+        threshold = userType.equals("volunteer") ? 100 : 80;
+
         moduleDAO = new ModuleDAO(this);
         contentDAO = new ContentDAO(this);
         userContentViewDAO = new UserContentViewDAO(this);
-        sessionManager = new SessionManager(this);
-        userId = sessionManager.getUserId();
+        resultDAO = new AssessmentResultDAO(this);
 
-        // Load and visualize module data
         allModules = moduleDAO.getAllModules();
+
         renderPieChart();
         setupFilter();
-
         setupBottomNavigation();
     }
 
@@ -69,23 +86,36 @@ public class ProgressSummaryActivity extends AppCompatActivity {
         int completed = 0, inProgress = 0, notStarted = 0;
 
         for (Module module : allModules) {
-            int progress = getModuleProgress(module);
-            if (progress >= 100) completed++;
-            else if (progress > 0) inProgress++;
-            else notStarted++;
+            int contentProgress = getModuleContentProgress(module);
+            if (isModuleCompleted(module)) {
+                completed++;
+            } else if (contentProgress > 0) {
+                inProgress++;
+            } else {
+                notStarted++;
+            }
         }
 
         List<PieEntry> entries = new ArrayList<>();
-        if (completed > 0) entries.add(new PieEntry(completed, "Completed"));
-        if (inProgress > 0) entries.add(new PieEntry(inProgress, "In Progress"));
-        if (notStarted > 0) entries.add(new PieEntry(notStarted, "Not Started"));
+        List<Integer> colors = new ArrayList<>();
+
+        if (completed > 0) {
+            entries.add(new PieEntry(completed, "Completed"));
+            colors.add(ContextCompat.getColor(this, R.color.completed_color));
+        }
+
+        if (inProgress > 0) {
+            entries.add(new PieEntry(inProgress, "In Progress"));
+            colors.add(ContextCompat.getColor(this, R.color.in_progress_color));
+        }
+
+        if (notStarted > 0) {
+            entries.add(new PieEntry(notStarted, "Not Started"));
+            colors.add(ContextCompat.getColor(this, R.color.not_started_color));
+        }
 
         PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(
-                getResources().getColor(R.color.completed_color),
-                getResources().getColor(R.color.in_progress_color),
-                getResources().getColor(R.color.not_started_color)
-        );
+        dataSet.setColors(colors);
 
         PieData pieData = new PieData(dataSet);
         pieChart.setData(pieData);
@@ -99,6 +129,9 @@ public class ProgressSummaryActivity extends AppCompatActivity {
         tvBreakdown.setText("Completed: " + completed +
                 "\nIn Progress: " + inProgress +
                 "\nNot Started: " + notStarted);
+
+        analyticsTracker.logProgressBreakdown(completed, inProgress, notStarted);
+
     }
 
     private void setupFilter() {
@@ -108,16 +141,20 @@ public class ProgressSummaryActivity extends AppCompatActivity {
                 List<Module> filtered = new ArrayList<>();
 
                 for (Module module : allModules) {
-                    int progress = getModuleProgress(module);
+                    int contentProgress = getModuleContentProgress(module);
+                    boolean completed = isModuleCompleted(module);
+
                     if (selected.equals("All")
-                            || (selected.equals("Completed") && progress >= 100)
-                            || (selected.equals("In Progress") && progress > 0 && progress < 100)
-                            || (selected.equals("Not Started") && progress == 0)) {
+                            || (selected.equals("Completed") && completed)
+                            || (selected.equals("In Progress") && contentProgress > 0 && !completed)
+                            || (selected.equals("Not Started") && contentProgress == 0)) {
                         filtered.add(module);
                     }
                 }
 
                 recyclerModules.setAdapter(new ProgressModuleAdapter(ProgressSummaryActivity.this, filtered));
+                analyticsTracker.logProgressFilterSelected(selected);
+
             }
 
             @Override public void onNothingSelected(AdapterView<?> parent) {}
@@ -126,14 +163,24 @@ public class ProgressSummaryActivity extends AppCompatActivity {
         filterSpinner.setSelection(0); // Default to "All"
     }
 
-    private int getModuleProgress(Module module) {
+    private int getModuleContentProgress(Module module) {
         int totalContent = contentDAO.getContentByModule(module.getModuleID()).size();
         int viewedContent = userContentViewDAO.getViewedCountForModule(userId, module.getModuleID());
-
         if (totalContent > 0) {
             return (int) ((viewedContent / (float) totalContent) * 100);
         }
         return 0;
+    }
+
+    private boolean isModuleCompleted(Module module) {
+        int contentProgress = getModuleContentProgress(module);
+        if (contentProgress < 100) return false;
+
+        AssessmentResult result = resultDAO.getLatestResult(userId, module.getModuleID());
+        if (result == null || result.getTotalQuestions() == 0) return false;
+
+        int scorePercent = (int) ((result.getScore() / (float) result.getTotalQuestions()) * 100);
+        return scorePercent >= threshold;
     }
 
     private void setupBottomNavigation() {

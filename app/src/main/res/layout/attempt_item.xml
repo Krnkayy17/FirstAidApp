@@ -1,40 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="12dp"
-    android:background="@drawable/rounded_border_bg">
+    android:layout_margin="8dp"
+    card_view:cardCornerRadius="8dp"
+    card_view:cardElevation="4dp">
 
-    <TextView
-        android:id="@+id/tvAttemptDate"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Date: Jan 01, 2024"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/rounded_border_bg">
 
-    <TextView
-        android:id="@+id/tvAttemptScore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Score: 8/10 (80%)"
-        android:textSize="14sp" />
+        <!-- Latest Attempt Label -->
+        <TextView
+            android:id="@+id/tvLatestAttempt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latest Attempt"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_dark"
+            android:visibility="gone"
+            android:textSize="14sp"
+            android:paddingBottom="4dp" />
 
-    <TextView
-        android:id="@+id/tvAttemptRetake"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Retake Count: 1"
-        android:textSize="14sp" />
+        <!-- Attempt Date and Time -->
+        <TextView
+            android:id="@+id/tvAttemptDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date: Jan 01, 2024 10:45 AM"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tvAttemptStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Status: Passed ✅"
-        android:textStyle="bold"
-        android:textColor="@android:color/holo_green_dark"
-        android:paddingTop="4dp" />
+        <!-- Score -->
+        <TextView
+            android:id="@+id/tvAttemptScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Score: 8/10 (80%)"
+            android:textSize="14sp" />
 
-</LinearLayout>
+        <!-- Retake Count -->
+        <TextView
+            android:id="@+id/tvAttemptRetake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Retake Count: 1"
+            android:textSize="14sp" />
+
+        <!-- Pass/Fail Status -->
+        <TextView
+            android:id="@+id/tvAttemptStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Passed ✅"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:paddingTop="4dp"
+            android:textColor="@android:color/holo_green_dark" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

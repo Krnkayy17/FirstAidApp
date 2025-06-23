@@ -152,13 +152,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
             }
 
             Intent intent = createModuleIntent(module);
-
-            new AlertDialog.Builder(context)
-                    .setTitle("Resume Module?")
-                    .setMessage("You have completed " + progress + "% of this module. Would you like to resume?")
-                    .setPositiveButton("Resume", (dialog, which) -> startActivity(intent, true))
-                    .setNegativeButton("Start Over", (dialog, which) -> startActivity(intent, false))
-                    .show();
+            startActivity(intent, true);
         });
     }
 

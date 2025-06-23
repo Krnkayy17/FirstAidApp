@@ -49,31 +49,41 @@ public class ProgressModuleAdapter extends RecyclerView.Adapter<ProgressModuleAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Module module = modules.get(position);
-        AssessmentResult result = resultDAO.getResult(userId, module.getModuleID());
+        AssessmentResult result = resultDAO.getLatestResult(userId, module.getModuleID());
 
         int totalContent = contentDAO.getContentByModule(module.getModuleID()).size();
         int viewedContent = userContentViewDAO.getViewedCountForModule(userId, module.getModuleID());
 
         int progress = (totalContent > 0) ? (int) ((viewedContent / (float) totalContent) * 100) : 0;
 
-        String status = "Not Started";
-        if (progress >= 100) {
-            status = "Completed";
-        } else if (progress > 0) {
-            status = "In Progress";
-        }
+        // Get user type & threshold
+        SessionManager sessionManager = new SessionManager(context);
+        String userType = sessionManager.getUserType();
+        int threshold = userType.equals("volunteer") ? 100 : 80;
 
-        String scoreText = "No attempts yet";
-        boolean showBadge = false;
-
+        // Determine quiz score percent (if any)
+        int scorePercent = -1;
         if (result != null && result.getTotalQuestions() > 0) {
-            int scorePercent = (int) ((result.getScore() / (float) result.getTotalQuestions()) * 100);
-            scoreText = "Score: " + scorePercent + "%";
-
-            // Show badge only if 100% completion + 100% score
-            showBadge = progress == 100 && scorePercent == 100;
+            scorePercent = (int) ((result.getScore() / (float) result.getTotalQuestions()) * 100);
         }
 
+        // Determine status
+        String status;
+        if (progress >= 100 && scorePercent >= threshold) {
+            status = "Completed";
+        } else if (progress > 0 || scorePercent >= 0) {
+            status = "In Progress";
+        } else {
+            status = "Not Started";
+        }
+
+        // Score display
+        String scoreText = (scorePercent >= 0) ? "Score: " + scorePercent + "%" : "No attempts yet";
+
+        // Badge logic (optional)
+        boolean showBadge = progress == 100 && scorePercent == 100;
+
+        // UI Bindings
         holder.tvTitle.setText(module.getModuleName());
         holder.tvStatus.setText("Status: " + status);
         holder.tvScore.setText(scoreText);

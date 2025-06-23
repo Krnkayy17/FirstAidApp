@@ -10,7 +10,18 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
+    <!-- App Icon -->
+
     <!-- Title -->
+    <ImageView
+        android:id="@+id/appIcon"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="App Icon"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/ic_app_rounded" />
+
     <TextView
         android:id="@+id/welcomeText"
         android:layout_width="wrap_content"
@@ -33,7 +44,9 @@
         android:text="Login"
         android:textColor="@color/black"
         android:textSize="22sp"
-        android:background="@drawable/rounded_button"/>
+        android:background="@drawable/rounded_button"
+        android:backgroundTint="@null"
+        />
 
     <!-- Signup Button -->
     <Button
@@ -45,6 +58,7 @@
         android:text="Signup"
         android:textColor="@color/black"
         android:textSize="22sp"
-        android:background="@drawable/rounded_button"/>
+        android:background="@drawable/rounded_button"
+        android:backgroundTint="@null"/>
 
 </LinearLayout>

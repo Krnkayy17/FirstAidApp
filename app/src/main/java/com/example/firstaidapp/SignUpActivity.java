@@ -29,7 +29,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         editTextName = findViewById(R.id.editTextName);
         editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPhone = findViewById(R.id.editTextPhone);
+        //editTextPhone = findViewById(R.id.editTextPhone);
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
         radioUserType = findViewById(R.id.radioUserType);
@@ -47,16 +47,17 @@ public class SignUpActivity extends AppCompatActivity {
     private void registerUser() {
         String name = editTextName.getText().toString().trim();
         String email = editTextEmail.getText().toString().trim();
-        String phone = editTextPhone.getText().toString().trim();
+        //String phone = editTextPhone.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
         String confirmPassword = editTextConfirmPassword.getText().toString().trim();
         int selectedTypeId = radioUserType.getCheckedRadioButtonId();
         String userType = (selectedTypeId == R.id.radioVolunteer) ? "volunteer" : "general";
 
-        if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            Toast.makeText(this, "Please fill in all fields!", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            Toast.makeText(this, "Please fill in all required fields!", Toast.LENGTH_SHORT).show();
             return;
         }
+
 
         if (!password.equals(confirmPassword)) {
             Toast.makeText(this, "Passwords do not match!", Toast.LENGTH_SHORT).show();
@@ -68,7 +69,7 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        if (userDAO.insertUser(name, email, phone, password, userType, null)) {
+        if (userDAO.insertUser(name, email, password, userType, null)) {
             Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LogInActivity.class));
             finish();

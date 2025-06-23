@@ -38,7 +38,7 @@ public class UserProfileActivity extends AppCompatActivity {
         // Initialize Views
         tvUserName = findViewById(R.id.tvUserName);
         tvEmail = findViewById(R.id.tvEmail);
-        tvPhone = findViewById(R.id.tvPhone);
+        //tvPhone = findViewById(R.id.tvPhone);
         tvUserType = findViewById(R.id.tvUserType);
         imgProfile = findViewById(R.id.imgProfile);
         btnLogout = findViewById(R.id.btnLogout);
@@ -67,7 +67,7 @@ public class UserProfileActivity extends AppCompatActivity {
         // Logout
         btnLogout.setOnClickListener(v -> {
             sessionManager.clearSession();
-            startActivity(new Intent(UserProfileActivity.this, LogInActivity.class));
+            startActivity(new Intent(UserProfileActivity.this, MainActivity.class));
             finish();
         });
 
@@ -98,7 +98,6 @@ public class UserProfileActivity extends AppCompatActivity {
         if (currentUser != null) {
             tvUserName.setText(currentUser.getUserName());
             tvEmail.setText(currentUser.getUserEmail());
-            tvPhone.setText(currentUser.getUserPhoneNum());
             tvUserType.setText("User Type: " + currentUser.getUserType());
 
             // Load profile image with Glide

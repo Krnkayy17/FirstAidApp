@@ -4,7 +4,6 @@ public class User {
     private int userId;
     private String userName;
     private String userEmail;
-    private String userPhoneNum;
     private String userPassword;
     private String userType; // Two types, VADs or general public
     private String userImage;
@@ -13,11 +12,10 @@ public class User {
     public User() {}
 
     // Constructor
-    public User(int userId, String userName, String userEmail, String userPhoneNum, String userPassword, String userType, String userImage) {
+    public User(int userId, String userName, String userEmail, String userPassword, String userType, String userImage) {
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
-        this.userPhoneNum = userPhoneNum;
         this.userPassword = userPassword;
         this.userType = userType;
         this.userImage = userImage;
@@ -46,14 +44,6 @@ public class User {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
-    }
-
-    public String getUserPhoneNum() {
-        return userPhoneNum;
-    }
-
-    public void setUserPhoneNum(String userPhoneNum) {
-        this.userPhoneNum = userPhoneNum;
     }
 
     public String getUserPassword() {

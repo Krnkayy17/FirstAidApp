@@ -143,6 +143,43 @@ public class ModuleDAO {
         );
     }
 
+    public int getModuleIdByName(String moduleName) {
+        int moduleId = -1;
+
+        Cursor cursor = db.query(
+                FirstAidDatabaseHelper.TABLE_MODULE,
+                new String[]{FirstAidDatabaseHelper.COLUMN_MODULE_ID},
+                FirstAidDatabaseHelper.COLUMN_MODULE_NAME + " = ?",
+                new String[]{moduleName},
+                null, null, null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            moduleId = cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_MODULE_ID));
+            cursor.close();
+        }
+
+        return moduleId;
+    }
+
+    public List<String> getAllModuleNames() {
+        List<String> moduleNames = new ArrayList<>();
+        Cursor cursor = db.query(
+                "MODULE",  // MUST match your onCreate table name
+                new String[]{"ModuleName"},
+                null, null, null, null,
+                "ModuleName ASC"
+        );
+        if (cursor.moveToFirst()) {
+            do {
+                moduleNames.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return moduleNames;
+    }
+
+
     public int getModuleProgress(int moduleId) {
         Cursor cursor = db.rawQuery(
                 "SELECT " + FirstAidDatabaseHelper.COLUMN_PROGRESS_PERCENTAGE +

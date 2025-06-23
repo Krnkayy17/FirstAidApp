@@ -15,6 +15,7 @@ import com.example.firstaidapp.QuizActivity;
 import com.example.firstaidapp.R;
 import com.example.firstaidapp.database.AssessmentResultDAO;
 import com.example.firstaidapp.database.QuestionDAO;
+import com.example.firstaidapp.database.UserContentViewDAO;
 import com.example.firstaidapp.models.AssessmentResult;
 import com.example.firstaidapp.models.Module;
 import com.example.firstaidapp.models.Question;
@@ -73,7 +74,7 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
         holder.tvProgressLabel.setText("Progress: " + percent + "%");
         holder.progressScore.setProgress(percent);
 
-        AssessmentResult result = resultDAO.getResult(userId, module.getModuleID());
+        AssessmentResult result = resultDAO.getLatestResult(userId, module.getModuleID());
         if (result != null) {
             holder.tvLastTaken.setText("🕓 Last taken: " + result.getDateTaken());
             holder.tvRetakeCount.setText("🔁 Retakes: " + result.getRetakeCount());
@@ -82,31 +83,37 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
             holder.tvRetakeCount.setText("🔁 Retakes: 0");
         }
 
-        boolean isCompleted = "Completed".equalsIgnoreCase(module.getCompletionStatus());
-        holder.tvAssessmentBadge.setVisibility(isCompleted ? View.VISIBLE : View.GONE);
-        holder.imgLock.setVisibility(isCompleted ? View.GONE : View.VISIBLE);
+        UserContentViewDAO userContentViewDAO = new UserContentViewDAO(context);
+        int viewedCount = userContentViewDAO.getViewedCountForModule(userId, module.getModuleID());
+        boolean isUnlocked = viewedCount > 0;
 
-        if (!isCompleted) {
-            holder.btnStart.setAlpha(0.5f);
-            holder.btnStart.setText("Locked");
-            holder.btnStart.setOnClickListener(v -> {
-                Toast.makeText(context, "Please complete the module first.", Toast.LENGTH_SHORT).show();
-            });
-        } else {
-            holder.btnStart.setAlpha(1f);
-            holder.btnStart.setText("Start Quiz");
-            holder.btnStart.setOnClickListener(v -> {
-                // Log quiz_started to Firebase
-                Bundle bundle = new Bundle();
-                bundle.putString("module_name", module.getModuleName());
-                bundle.putInt("module_id", module.getModuleID());
-                FirebaseAnalytics.getInstance(context).logEvent("quiz_started", bundle);
+        holder.tvAssessmentBadge.setVisibility(isUnlocked ? View.VISIBLE : View.GONE);
+        holder.imgLock.setVisibility(isUnlocked ? View.GONE : View.VISIBLE);
 
-                Intent intent = new Intent(context, QuizActivity.class);
-                intent.putExtra("MODULE_ID", module.getModuleID());
-                context.startActivity(intent);
-            });
-        }
+        holder.btnStart.setEnabled(isUnlocked);
+        holder.btnStart.setAlpha(isUnlocked ? 1.0f : 0.5f);
+        holder.btnStart.setText(isUnlocked ? "Start Quiz" : "Locked");
+
+        holder.btnStart.setOnClickListener(v -> {
+            if (!isUnlocked) {
+                Toast.makeText(context, "Please start the module first.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Log quiz_started to Firebase
+            Bundle bundle = new Bundle();
+            bundle.putString("module_name", module.getModuleName());
+            bundle.putInt("module_id", module.getModuleID());
+            bundle.putString("user_type", userType);
+            bundle.putInt("question_count", questions.size());
+
+            FirebaseAnalytics.getInstance(context).logEvent("quiz_started", bundle);
+
+            Intent intent = new Intent(context, QuizActivity.class);
+            intent.putExtra("MODULE_ID", module.getModuleID());
+            context.startActivity(intent);
+        });
+
     }
 
     @Override

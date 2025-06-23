@@ -350,14 +350,14 @@ public class ContentDAO {
             order++;
 
             insertContent(new Content(moduleId, "When to Use a Tourniquet", null, null, null, order, "text"));
-            insertContent(new Content(moduleId, null, "Tourniquet Use (Last Resort)", null, null, order, "image"));
+            insertContent(new Content(moduleId, null, "Tourniquet Use (Last Resort)", null, null, order, "text"));
             insertContent(new Content(moduleId, null, "•\tUse only when direct pressure fails for life-threatening limb bleeding.\n" +
                     "•\tApply 5 cm above the wound.\n" +
                     "•\tTighten until bleeding stops.\n" +
                     "•\tRecord the time of application visibly on the person.\n" +
                     "•\tNever loosen or remove; let trained responders handle it.\n", null, null, order, "text"));
-            insertContent(new Content(moduleId, null, "tourniqet", null, null, order, "image"));
-            insertContent(new Content(moduleId, null, "tourniqet_placement", null, null, order, "image"));
+            insertContent(new Content(moduleId, null, null, "tourniqet", null, order, "image"));
+            insertContent(new Content(moduleId, null, null, "tourniqet_placement", null, order, "image"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/jCKCjH_Ugs0?si=7DBsUVPRDV69JWe5", order, "video"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/u3nrDb5XjSI?si=MrYla98ihaxk4iMt", order, "video"));
             order++;

@@ -26,11 +26,10 @@ public class UserDAO {
     }
 
     // Insert new user
-    public boolean insertUser(String name, String email, String phone, String password, String userType, String userImage) {
+    public boolean insertUser(String name, String email, String password, String userType, String userImage) {
         ContentValues values = new ContentValues();
         values.put(FirstAidDatabaseHelper.COLUMN_USER_NAME, name);
         values.put(FirstAidDatabaseHelper.COLUMN_USER_EMAIL, email);
-        values.put(FirstAidDatabaseHelper.COLUMN_USER_PHONE, phone);
         values.put(FirstAidDatabaseHelper.COLUMN_USER_PASSWORD, password);
         values.put(FirstAidDatabaseHelper.COLUMN_USER_TYPE, userType);
         values.put(FirstAidDatabaseHelper.COLUMN_USER_IMAGE, userImage);
@@ -131,7 +130,6 @@ public class UserDAO {
         ContentValues values = new ContentValues();
         values.put(FirstAidDatabaseHelper.COLUMN_USER_NAME, user.getUserName());
         values.put(FirstAidDatabaseHelper.COLUMN_USER_EMAIL, user.getUserEmail());
-        values.put(FirstAidDatabaseHelper.COLUMN_USER_PHONE, user.getUserPhoneNum());
         values.put(FirstAidDatabaseHelper.COLUMN_USER_PASSWORD, user.getUserPassword());
         values.put(FirstAidDatabaseHelper.COLUMN_USER_TYPE, user.getUserType());
         values.put(FirstAidDatabaseHelper.COLUMN_USER_IMAGE, user.getUserImage());
@@ -171,7 +169,6 @@ public class UserDAO {
                 cursor.getInt(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_USER_ID)),
                 cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_USER_NAME)),
                 cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_USER_EMAIL)),
-                cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_USER_PHONE)),
                 cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_USER_PASSWORD)),
                 cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_USER_TYPE)),
                 cursor.getString(cursor.getColumnIndexOrThrow(FirstAidDatabaseHelper.COLUMN_USER_IMAGE))

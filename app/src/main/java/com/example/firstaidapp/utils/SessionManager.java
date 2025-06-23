@@ -9,7 +9,6 @@ public class SessionManager {
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_EMAIL = "user_email";
-    private static final String KEY_USER_PHONE = "user_phone";
     private static final String KEY_USER_TYPE = "user_type";
     private static final String KEY_PROFILE_IMAGE = "profile_image";
 
@@ -22,11 +21,10 @@ public class SessionManager {
     }
 
     // Save the full user session
-    public void saveUserSession(int userId, String name, String email, String phone, String type, String imageUri) {
+    public void saveUserSession(int userId, String name, String email, String type, String imageUri) {
         editor.putInt(KEY_USER_ID, userId);
         editor.putString(KEY_USER_NAME, name);
         editor.putString(KEY_USER_EMAIL, email);
-        editor.putString(KEY_USER_PHONE, phone);
         editor.putString(KEY_USER_TYPE, type);
         editor.putString(KEY_PROFILE_IMAGE, imageUri);
         editor.apply();
@@ -43,10 +41,6 @@ public class SessionManager {
 
     public String getUserEmail() {
         return prefs.getString(KEY_USER_EMAIL, "");
-    }
-
-    public String getUserPhone() {
-        return prefs.getString(KEY_USER_PHONE, "");
     }
 
     public String getUserType() {
@@ -75,11 +69,6 @@ public class SessionManager {
 
     public void updateUserEmail(String email) {
         editor.putString(KEY_USER_EMAIL, email);
-        editor.apply();
-    }
-
-    public void updateUserPhone(String phone) {
-        editor.putString(KEY_USER_PHONE, phone);
         editor.apply();
     }
 

@@ -61,7 +61,6 @@ public class LogInActivity extends AppCompatActivity {
                     user.getUserId(),
                     user.getUserName(),
                     user.getUserEmail(),
-                    user.getUserPhoneNum(),
                     user.getUserType(),
                     user.getUserImage()
             );

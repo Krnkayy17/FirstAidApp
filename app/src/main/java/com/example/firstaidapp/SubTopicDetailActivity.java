@@ -8,6 +8,8 @@ import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+import com.bumptech.glide.Glide;
 import com.example.firstaidapp.database.ContentDAO;
 import com.example.firstaidapp.database.ModuleDAO;
 import com.example.firstaidapp.database.ModuleProgressDAO;
@@ -180,7 +182,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
                     startActivity(intent);
                 })
                 .setNegativeButton("Later", (dialog, which) -> {
-                    Toast.makeText(this, "You can take the quiz anytime from the module page.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "You can take the quiz anytime from the assessment page.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SubTopicDetailActivity.this, ModuleActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
@@ -223,13 +225,46 @@ public class SubTopicDetailActivity extends AppCompatActivity {
     }
 
     private void addVideoLink(String url) {
-        TextView link = new TextView(this);
-        link.setText(Html.fromHtml("<a href=\"" + url + "\">Watch video</a>"));
-        link.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
-        link.setTextColor(ContextCompat.getColor(this, android.R.color.holo_blue_dark));
-        link.setLayoutParams(getDefaultLayoutParams());
-        contentContainer.addView(link);
+        String videoId = extractYouTubeVideoId(url);
+        if (videoId == null || videoId.isEmpty()) return;
+
+        String thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/0.jpg";
+
+        ImageView thumbnail = new ImageView(this);
+        thumbnail.setLayoutParams(getDefaultLayoutParams());
+        thumbnail.setAdjustViewBounds(true);
+        thumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+        Glide.with(this)
+                .load(thumbnailUrl)
+                .placeholder(R.drawable.video_placeholder) // Add a placeholder image in drawable
+                .into(thumbnail);
+
+        thumbnail.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url));
+            startActivity(intent);
+        });
+
+        contentContainer.addView(thumbnail);
     }
+
+    private String extractYouTubeVideoId(String url) {
+        if (url == null) return null;
+        String pattern = "(?<=youtu.be/|watch\\?v=|embed/)[^&#\\n]+";
+        java.util.regex.Pattern compiledPattern = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher matcher = compiledPattern.matcher(url);
+        if (matcher.find()) {
+            String videoId = matcher.group();
+            // Remove anything after "?" in case of additional query parameters
+            int questionMarkIndex = videoId.indexOf("?");
+            if (questionMarkIndex != -1) {
+                videoId = videoId.substring(0, questionMarkIndex);
+            }
+            return videoId;
+        }
+        return null;
+    }
+
 
     private LinearLayout.LayoutParams getDefaultLayoutParams() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(

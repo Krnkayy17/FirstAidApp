@@ -248,7 +248,6 @@ public class QuizActivity extends AppCompatActivity {
 
         int totalQuestions = questions.size();
         float percentage = (score / (float) totalQuestions) * 100f;
-
         int threshold = userType.equals("volunteer") ? 100 : 80;
 
         AssessmentResult result = new AssessmentResult();
@@ -258,15 +257,15 @@ public class QuizActivity extends AppCompatActivity {
         result.setTotalQuestions(totalQuestions);
         result.setDateTaken(new Date());
 
-        AssessmentResult existing = resultDAO.getResult(userId, moduleId);
-        if (existing != null) {
-            result.setRetakeCount(existing.getRetakeCount() + 1);
-            resultDAO.updateResult(result);
-        } else {
-            result.setRetakeCount(0);
-            resultDAO.insertResult(result);
-        }
+        // ✅ Set retake count based on last attempt (if any)
+        AssessmentResult existing = resultDAO.getLatestResult(userId, moduleId); // ← renamed version of getResult()
+        int retakeCount = (existing != null ? existing.getRetakeCount() + 1 : 0);
+        result.setRetakeCount(retakeCount);
 
+        // ✅ Always insert a new result
+        resultDAO.insertResult(result);
+
+        // Update progress and completion status
         moduleDAO.updateProgressPercentage(moduleId, (int) percentage);
         if (percentage >= threshold) {
             moduleDAO.updateCompletionStatus(moduleId, "Completed");
@@ -279,7 +278,7 @@ public class QuizActivity extends AppCompatActivity {
                         (percentage >= threshold ? "✅ Completed!" : "🕓 In Progress."),
                 Toast.LENGTH_LONG).show();
 
-        // Log to Firebase Analytics
+        // Firebase Analytics log
         Bundle resultBundle = new Bundle();
         resultBundle.putInt("module_id", moduleId);
         resultBundle.putInt("score", score);
@@ -287,8 +286,9 @@ public class QuizActivity extends AppCompatActivity {
         resultBundle.putFloat("percentage", percentage);
         resultBundle.putString("status", (percentage >= threshold) ? "completed" : "in_progress");
         resultBundle.putString("user_type", userType);
-        resultBundle.putInt("retake_count", result.getRetakeCount());
+        resultBundle.putInt("retake_count", retakeCount);
         resultBundle.putString("date_taken", new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
+
         firebaseAnalytics.logEvent("quiz_completed", resultBundle);
     }
 

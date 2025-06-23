@@ -7,14 +7,14 @@
     android:orientation="vertical"
     android:padding="16dp"
     tools:context=".SubTopicActivity"
-    android:background="#F5F5F5">
+    android:background="@color/white">
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/nav_background"
+        android:background="@color/white"
         android:titleTextColor="@android:color/black"
         android:layout_alignParentTop="true" />
 

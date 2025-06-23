@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp"
     tools:context=".ReviewAnswersActivity">
 
@@ -14,7 +15,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="12dp">
 
         <LinearLayout
@@ -23,4 +25,5 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
     </ScrollView>
+
 </LinearLayout>

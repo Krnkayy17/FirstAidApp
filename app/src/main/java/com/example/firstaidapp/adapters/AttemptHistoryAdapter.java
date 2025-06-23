@@ -20,7 +20,7 @@ import java.util.Locale;
 public class AttemptHistoryAdapter extends RecyclerView.Adapter<AttemptHistoryAdapter.ViewHolder> {
 
     private final List<AssessmentResult> attempts;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
     private final Context context;
 
     // Optional: Pass user type if needed
@@ -55,13 +55,15 @@ public class AttemptHistoryAdapter extends RecyclerView.Adapter<AttemptHistoryAd
         float passThreshold = userType.equalsIgnoreCase("VAD") ? 100f : 80f;
         boolean isPassed = percentage >= passThreshold;
 
-        holder.tvDate.setText("Date: " + dateText);
+        int attemptNumber = getItemCount() - position;
+        holder.tvDate.setText("Attempt " + attemptNumber + " • " + dateText);
         holder.tvScore.setText("Score: " + score + "/" + total + " (" + Math.round(percentage) + "%)");
         holder.tvRetake.setText("Retake Count: " + attempt.getRetakeCount());
 
         holder.tvStatus.setText(isPassed ? "Status: Passed ✅" : "Status: Failed ❌");
         holder.tvStatus.setTextColor(ContextCompat.getColor(context,
                 isPassed ? android.R.color.holo_green_dark : android.R.color.holo_red_dark));
+        holder.tvLatest.setVisibility(position == 0 ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -70,14 +72,14 @@ public class AttemptHistoryAdapter extends RecyclerView.Adapter<AttemptHistoryAd
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvDate, tvScore, tvRetake, tvStatus;
-
+        TextView tvDate, tvScore, tvRetake, tvStatus, tvLatest;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDate = itemView.findViewById(R.id.tvAttemptDate);
             tvScore = itemView.findViewById(R.id.tvAttemptScore);
             tvRetake = itemView.findViewById(R.id.tvAttemptRetake);
             tvStatus = itemView.findViewById(R.id.tvAttemptStatus);
+            tvLatest = itemView.findViewById(R.id.tvLatestAttempt);
         }
     }
 }
