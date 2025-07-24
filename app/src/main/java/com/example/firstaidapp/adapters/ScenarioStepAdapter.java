@@ -69,7 +69,7 @@ public class ScenarioStepAdapter extends RecyclerView.Adapter<ScenarioStepAdapte
     }
 
 
-    // 🔁 Reset the steps to a shuffled original
+    // Reset the steps to a shuffled original
     public void resetOrder() {
         currentSteps.clear();
         currentSteps.addAll(originalSteps);
@@ -77,14 +77,14 @@ public class ScenarioStepAdapter extends RecyclerView.Adapter<ScenarioStepAdapte
         notifyDataSetChanged();
     }
 
-    // 🎯 Used by ItemTouchHelper to swap items during drag
+    // Used by ItemTouchHelper to swap items during drag
     public void onItemMove(int fromPosition, int toPosition) {
         if (fromPosition < 0 || toPosition >= currentSteps.size()) return;
         Collections.swap(currentSteps, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    // 🧠 Used in checkAnswer() to compare current order
+    // Used in checkAnswer() to compare current order
     public List<String> getCurrentSteps() {
         return currentSteps;
     }

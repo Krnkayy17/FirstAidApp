@@ -15,6 +15,7 @@ public class UserContentViewDAO {
     private final SQLiteDatabase db;
     private final FirstAidDatabaseHelper dbHelper;
 
+    // Table and column constants
     public static final String TABLE_USER_CONTENT_VIEW = "USER_CONTENT_VIEW";
     public static final String COLUMN_VIEW_ID = "ViewID";
     public static final String COLUMN_USER_ID = "UserID";
@@ -22,6 +23,7 @@ public class UserContentViewDAO {
     public static final String COLUMN_CONTENT_ID = "ContentID";
     public static final String COLUMN_VIEWED = "Viewed"; // 0 or 1
 
+    // Constructor initializes the database and ensures the table exists
     public UserContentViewDAO(Context context) {
         dbHelper = new FirstAidDatabaseHelper(context);
         db = dbHelper.getWritableDatabase();
@@ -48,6 +50,7 @@ public class UserContentViewDAO {
         }
     }
 
+    // Checks if a specific content has already been viewed by a user
     public boolean isContentViewed(int userId, int contentId, int moduleId) {
         Cursor cursor = db.query(TABLE_USER_CONTENT_VIEW,
                 null,
@@ -60,6 +63,7 @@ public class UserContentViewDAO {
         return viewed;
     }
 
+    // Returns the total number of contents viewed by a user in a specific module
     public int getViewedContentCount(int userId, int moduleId) {
         int count = 0;
         SQLiteDatabase readableDb = dbHelper.getReadableDatabase();
@@ -79,6 +83,7 @@ public class UserContentViewDAO {
         return count;
     }
 
+    // Retrieves all content items for a specific module from the Content table
     public List<Content> getAllContentForModule(int moduleId) {
         List<Content> contents = new ArrayList<>();
         SQLiteDatabase readableDb = dbHelper.getReadableDatabase();
@@ -116,6 +121,7 @@ public class UserContentViewDAO {
         return count;
     }
 
+    // Gets the highest content order viewed by the user in a module (used for resume feature)
     public int getLastViewedOrder(int userId, int moduleId) {
         Cursor cursor = db.rawQuery(
                 "SELECT c.ContentOrder FROM " + TABLE_USER_CONTENT_VIEW + " v " +

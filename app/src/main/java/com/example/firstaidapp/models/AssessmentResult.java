@@ -11,6 +11,11 @@ public class AssessmentResult {
     private int retakeCount;
     private Date dateTaken;
 
+    // Default constructor
+    public AssessmentResult () {
+
+    }
+
     // Getters and Setters
     public int getResultId() { return resultId; }
     public void setResultId(int resultId) { this.resultId = resultId; }

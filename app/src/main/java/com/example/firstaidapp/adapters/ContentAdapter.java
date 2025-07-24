@@ -28,14 +28,14 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
         this.context = context;
         this.sectionList = new ArrayList<>();
 
-        // Use HashSet to track which contentOrder we've already added
+        // HashSet to keep track of already added content orders
         Set<Integer> seenOrders = new HashSet<>();
 
         for (Content content : allContent) {
             int order = content.getContentOrder();
             String title = content.getContentTitle();
 
-            // Only add one item per section (order) with a non-empty title
+            // Only add the first content with each unique order and a non-empty title
             if (!seenOrders.contains(order) && title != null && !title.trim().isEmpty()) {
                 sectionList.add(content);
                 seenOrders.add(order);
@@ -55,6 +55,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
         Content content = sectionList.get(position);
         holder.tvContentTitle.setText(content.getContentTitle());
 
+        // Navigate to detailed content when clicked
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, SubTopicDetailActivity.class);
             intent.putExtra("MODULE_ID", content.getModuleId());

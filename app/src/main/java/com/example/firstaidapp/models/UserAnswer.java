@@ -1,6 +1,7 @@
 package com.example.firstaidapp.models;
 
 public class UserAnswer {
+
     private String userAnswer;
     private boolean isCorrect;
     private String correctAnswer;

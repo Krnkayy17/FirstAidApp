@@ -14,7 +14,7 @@ public class Module {
     private boolean isLocked;
 
     public Module() {
-        // Optional: set default values if needed
+        // set default values if needed
         this.completionStatus = "Not Started";
         this.progressPercentage = 0;
         this.isLocked = false;

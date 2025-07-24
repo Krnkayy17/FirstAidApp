@@ -1,12 +1,13 @@
 package com.example.firstaidapp.models;
 
 public class VideoRecommendation {
+
     private int id;
     private int moduleId;
     private String title;
     private String url;
     private String thumbnailUrl;
-    private String tag;  // ✅ New field for topic/AI tag
+    private String tag;
 
     public VideoRecommendation() {}
 

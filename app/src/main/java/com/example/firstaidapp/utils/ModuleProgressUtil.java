@@ -16,19 +16,17 @@ public class ModuleProgressUtil {
 
     private static final String TAG = "ModuleProgressUtil";
 
-    /**
-     * Calculates overall module progress as a weighted percentage.
-     * Weight: 30% content viewed + 70% quiz score.
-     */
+
+    // Calculates overall module progress as a weighted percentage.
+    // Weight: 30% content viewed + 70% quiz score.
     public static int calculateModuleProgress(Context context, int userId, int moduleId) {
         int contentProgress = calculateContentProgress(context, userId, moduleId);
         int assessmentProgress = calculateAssessmentProgress(context, userId, moduleId);
         return (int) ((0.3 * contentProgress) + (0.7 * assessmentProgress));
     }
 
-    /**
-     * Calculates content viewing progress.
-     */
+
+    // Calculates content viewing progress.
     public static int calculateContentProgress(Context context, int userId, int moduleId) {
         UserContentViewDAO contentViewDAO = new UserContentViewDAO(context);
         List<Content> contents = contentViewDAO.getAllContentForModule(moduleId);
@@ -39,9 +37,7 @@ public class ModuleProgressUtil {
         return total > 0 ? (int) ((viewed / (float) total) * 100) : 0;
     }
 
-    /**
-     * Calculates assessment progress as percentage of latest quiz score.
-     */
+    // Calculates assessment progress as percentage of latest quiz score.
     private static int calculateAssessmentProgress(Context context, int userId, int moduleId) {
         QuestionDAO questionDAO = new QuestionDAO(context);
         AssessmentResultDAO resultDAO = new AssessmentResultDAO(context);
@@ -56,10 +52,9 @@ public class ModuleProgressUtil {
         return (int) ((latestScore / (float) totalQuestions) * 100);
     }
 
-    /**
-     * Determines if the user has passed the quiz for the module.
-     * General: 80% or more. VAD: 100%.
-     */
+
+     // Determines if the user has passed the quiz for the module.
+     // General: 80% or more. VAD: 100%.
     public static boolean isAssessmentPassed(Context context, int userId, int moduleId) {
         SessionManager sessionManager = new SessionManager(context);
         String userType = sessionManager.getUserType();
@@ -79,18 +74,14 @@ public class ModuleProgressUtil {
         return "VAD".equalsIgnoreCase(userType) ? percentage == 100 : percentage >= 80;
     }
 
-    /**
-     * Convenience method using session userId.
-     */
+    // Convenience method using session userId.
     public static boolean hasPassedAssessment(Context context, int moduleId) {
         SessionManager sessionManager = new SessionManager(context);
         int userId = sessionManager.getUserId();
         return isAssessmentPassed(context, userId, moduleId);
     }
 
-    /**
-     * Returns detailed progress status object.
-     */
+    // Returns detailed progress status object.
     public static ModuleProgressStatus getModuleProgressStatus(Context context, int userId, int moduleId) {
         int contentProgress = calculateContentProgress(context, userId, moduleId);
         int assessmentProgress = calculateAssessmentProgress(context, userId, moduleId);

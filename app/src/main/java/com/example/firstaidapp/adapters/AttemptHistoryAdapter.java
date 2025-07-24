@@ -22,10 +22,9 @@ public class AttemptHistoryAdapter extends RecyclerView.Adapter<AttemptHistoryAd
     private final List<AssessmentResult> attempts;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
     private final Context context;
-
-    // Optional: Pass user type if needed
     private final String userType;
 
+    // Constructor
     public AttemptHistoryAdapter(Context context, List<AssessmentResult> attempts, String userType) {
         this.context = context;
         this.attempts = attempts;
@@ -43,18 +42,21 @@ public class AttemptHistoryAdapter extends RecyclerView.Adapter<AttemptHistoryAd
     public void onBindViewHolder(@NonNull AttemptHistoryAdapter.ViewHolder holder, int position) {
         AssessmentResult attempt = attempts.get(position);
 
+        // Format date or show "N/A"
         String dateText = attempt.getDateTaken() != null
                 ? dateFormat.format(attempt.getDateTaken())
                 : "N/A";
 
+        // Calculate score percentage
         int score = attempt.getScore();
         int total = attempt.getTotalQuestions();
         float percentage = total > 0 ? ((float) score / total) * 100f : 0;
 
-        // Determine pass threshold
+        // Determine if user pass the threshold based on user type
         float passThreshold = userType.equalsIgnoreCase("VAD") ? 100f : 80f;
         boolean isPassed = percentage >= passThreshold;
 
+        // Display attempt details
         int attemptNumber = getItemCount() - position;
         holder.tvDate.setText("Attempt " + attemptNumber + " • " + dateText);
         holder.tvScore.setText("Score: " + score + "/" + total + " (" + Math.round(percentage) + "%)");
@@ -67,6 +69,7 @@ public class AttemptHistoryAdapter extends RecyclerView.Adapter<AttemptHistoryAd
     }
 
     @Override
+    // Returns the number of attempt items in the list
     public int getItemCount() {
         return attempts.size();
     }

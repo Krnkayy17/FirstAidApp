@@ -28,7 +28,7 @@ public class ModuleProgressDAO {
         int percent = (int) ((viewedCount / (float) totalCount) * 100);
         moduleDAO.updateProgressPercentage(moduleId, percent);
 
-        // 📊 Log progress update
+        // Log progress update
         Bundle progressBundle = new Bundle();
         progressBundle.putInt("user_id", userId);
         progressBundle.putInt("module_id", moduleId);
@@ -38,13 +38,13 @@ public class ModuleProgressDAO {
         if (viewedCount >= totalCount) {
             moduleDAO.updateCompletionStatus(moduleId, "Completed");
 
-            // ✅ Log module completed
+            // Log module completed
             Bundle completeBundle = new Bundle();
             completeBundle.putInt("user_id", userId);
             completeBundle.putInt("module_id", moduleId);
             firebaseAnalytics.logEvent("module_completed", completeBundle);
 
-            // 🎯 Log quiz availability
+            // Log quiz availability
             Bundle quizBundle = new Bundle();
             quizBundle.putInt("user_id", userId);
             quizBundle.putInt("module_id", moduleId);

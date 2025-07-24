@@ -138,6 +138,7 @@ public class QuizResultActivity extends AppCompatActivity {
         List<VideoRecommendation> allVideos = dao.getRecommendationsByModule(moduleId);
         List<VideoRecommendation> sorted = new ArrayList<>();
 
+        // Prioritize top tags
         for (String tag : topTags) {
             for (VideoRecommendation video : allVideos) {
                 if (tag.equalsIgnoreCase(video.getTag()) && !sorted.contains(video)) {
@@ -150,13 +151,17 @@ public class QuizResultActivity extends AppCompatActivity {
                 sorted.add(video);
             }
         }
-        List<VideoRecommendation> videos = sorted.subList(0, Math.min(3, sorted.size()));
 
+        // Shuffle the sorted list before limiting
+        java.util.Collections.shuffle(sorted);
+
+        // Pick top 3 after shuffle
+        List<VideoRecommendation> videos = sorted.subList(0, Math.min(3, sorted.size()));
 
         Log.d("QuizResult", "Module ID: " + moduleId);
         Log.d("QuizResult", "Recommended videos found: " + videos.size());
 
-        if (videos != null && !videos.isEmpty()) {
+        if (!videos.isEmpty()) {
             recyclerRecommendations.setLayoutManager(new LinearLayoutManager(this));
             recyclerRecommendations.setAdapter(new VideoRecommendationAdapter(videos, this, video -> {
                 if (moduleName != null) {
@@ -174,7 +179,6 @@ public class QuizResultActivity extends AppCompatActivity {
                         video.getTag()
                 );
                 new VideoClickLogDAO(this).insertLog(log);
-
 
                 String url = "https://www.youtube.com/watch?v=" + video.getYoutubeVideoId();
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));

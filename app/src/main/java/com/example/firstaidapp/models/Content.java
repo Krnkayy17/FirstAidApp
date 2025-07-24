@@ -12,12 +12,12 @@ public class Content {
     private int contentOrder;
     private String contentType;
 
-    // Constructor
-
+    // Default Constructor
     public Content() {
-        // Empty constructor for manual field setting
+
     }
 
+    // Constructor
     public Content(int moduleId, String title, String text, String image, String url, int order, String type) {
         this.moduleId = moduleId;
         this.contentTitle = title;
@@ -27,7 +27,6 @@ public class Content {
         this.contentOrder = order;
         this.contentType = type;
     }
-
 
     // Getters
     public int getContentId() {
@@ -62,17 +61,14 @@ public class Content {
         return contentType;
     }
 
-
-    // Setters
     // Setters
     public void setContentId(int contentID) {
-        this.contentId = contentID; // fix
+        this.contentId = contentID;
     }
 
     public void setModuleId(int moduleID) {
-        this.moduleId = moduleID; // fix
+        this.moduleId = moduleID;
     }
-
 
     public void setContentTitle(String contentTitle) {
         this.contentTitle = contentTitle;

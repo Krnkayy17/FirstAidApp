@@ -32,7 +32,6 @@ public class QuizActivity extends AppCompatActivity {
 
     private FirebaseAnalytics firebaseAnalytics;
 
-    // Views
     private TextView tvQuestionNumber;
     private LinearLayout layoutMcq, layoutScenario;
     private TextView tvMcqQuestion, tvScenarioTitle, tvScenarioInstruction;
@@ -49,6 +48,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        // Extract module ID passed via intent
         int moduleId = getIntent().getIntExtra("MODULE_ID", -1);
         if (moduleId == -1) {
             Toast.makeText(this, "Module ID missing.", Toast.LENGTH_SHORT).show();
@@ -56,12 +56,14 @@ public class QuizActivity extends AppCompatActivity {
             return;
         }
 
+        // Log quiz start event to Firebase Analytics
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         Bundle startBundle = new Bundle();
         startBundle.putInt("module_id", moduleId);
         startBundle.putString("event_type", "quiz_started");
         firebaseAnalytics.logEvent("quiz_event", startBundle);
 
+        // Load questions from database
         questions = new QuestionDAO(this).getQuestionsByModuleId(moduleId);
         if (questions == null || questions.isEmpty()) {
             Toast.makeText(this, "No questions found.", Toast.LENGTH_SHORT).show();
@@ -88,8 +90,12 @@ public class QuizActivity extends AppCompatActivity {
         btnNextSubmit = findViewById(R.id.btn_next_submit);
         btnPrevious = findViewById(R.id.btn_previous_question);
 
+        // Next/Submit button click listener
         btnNextSubmit.setOnClickListener(v -> {
-            checkAnswer();
+            if (!checkAnswer()) {
+                return;
+            }
+
             if (currentQuestionIndex == questions.size() - 1) {
                 saveAssessmentResult();
                 Intent intent = new Intent(QuizActivity.this, QuizResultActivity.class);
@@ -105,6 +111,7 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        // Previous button click listener
         btnPrevious.setOnClickListener(v -> {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
@@ -181,22 +188,19 @@ public class QuizActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerSteps);
     }
 
-    private void checkAnswer() {
-        if (questions == null || questions.isEmpty() || currentQuestionIndex >= questions.size()) return;
+    // Only one toast for MCQ validation
+    private boolean checkAnswer() {
+        if (questions == null || questions.isEmpty() || currentQuestionIndex >= questions.size()) return false;
 
         Question q = questions.get(currentQuestionIndex);
 
         if ("mcq".equalsIgnoreCase(q.getQuestionType())) {
             int selectedId = rgOptions.getCheckedRadioButtonId();
-            if (selectedId == -1) {
-                Toast.makeText(this, "Please select an answer.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
             RadioButton selected = findViewById(selectedId);
-            if (selected == null || selected.getTag() == null) {
-                Toast.makeText(this, "Invalid selection. Please try again.", Toast.LENGTH_SHORT).show();
-                return;
+
+            if (selectedId == -1 || selected == null || selected.getTag() == null) {
+                Toast.makeText(this, "Please select an answer.", Toast.LENGTH_SHORT).show();
+                return false;
             }
 
             String selectedTag = selected.getTag().toString();
@@ -215,7 +219,7 @@ public class QuizActivity extends AppCompatActivity {
             );
 
         } else if ("scenario".equalsIgnoreCase(q.getQuestionType())) {
-            if (stepAdapter == null) return;
+            if (stepAdapter == null) return false;
 
             List<String> currentSteps = stepAdapter.getCurrentSteps();
             String userSequence = String.join(",", currentSteps);
@@ -234,6 +238,8 @@ public class QuizActivity extends AppCompatActivity {
 
             if (isCorrect) score++;
         }
+
+        return true;
     }
 
     private void saveAssessmentResult() {
@@ -257,15 +263,12 @@ public class QuizActivity extends AppCompatActivity {
         result.setTotalQuestions(totalQuestions);
         result.setDateTaken(new Date());
 
-        // ✅ Set retake count based on last attempt (if any)
-        AssessmentResult existing = resultDAO.getLatestResult(userId, moduleId); // ← renamed version of getResult()
+        AssessmentResult existing = resultDAO.getLatestResult(userId, moduleId);
         int retakeCount = (existing != null ? existing.getRetakeCount() + 1 : 0);
         result.setRetakeCount(retakeCount);
 
-        // ✅ Always insert a new result
         resultDAO.insertResult(result);
 
-        // Update progress and completion status
         moduleDAO.updateProgressPercentage(moduleId, (int) percentage);
         if (percentage >= threshold) {
             moduleDAO.updateCompletionStatus(moduleId, "Completed");
@@ -278,7 +281,6 @@ public class QuizActivity extends AppCompatActivity {
                         (percentage >= threshold ? "✅ Completed!" : "🕓 In Progress."),
                 Toast.LENGTH_LONG).show();
 
-        // Firebase Analytics log
         Bundle resultBundle = new Bundle();
         resultBundle.putInt("module_id", moduleId);
         resultBundle.putInt("score", score);

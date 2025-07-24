@@ -29,6 +29,7 @@ public class VideoRecommendationDAO {
         }
     }
 
+    // Inserts a new video recommendation into the database
     public void insertRecommendation(VideoRecommendation video) {
         open();
         ContentValues values = new ContentValues();
@@ -41,6 +42,7 @@ public class VideoRecommendationDAO {
         close();
     }
 
+    // Returns all recommendations for a specific module ID
     public List<VideoRecommendation> getRecommendationsByModule(int moduleId) {
         open();
         List<VideoRecommendation> list = new ArrayList<>();
@@ -68,11 +70,13 @@ public class VideoRecommendationDAO {
         return list;
     }
 
+    // Inserts a predefined list of videos for initial database setup
     public void insertInitialVideos(SQLiteDatabase db) {
+        // Check if table already has data
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM video_recommendations", null);
         if (cursor.moveToFirst() && cursor.getInt(0) > 0) {
             cursor.close();
-            return; // Already inserted
+            return; // Skip if already inserted
         }
         cursor.close();
 
@@ -145,6 +149,7 @@ public class VideoRecommendationDAO {
         return list;
     }
 
+    // Gets top 10 global recommendations sorted by click count
     public List<VideoRecommendation> getAllRecommendationsSortedByClickCount() {
         List<VideoRecommendation> videos = new ArrayList<>();
         open();
@@ -187,8 +192,6 @@ public class VideoRecommendationDAO {
         return videos;
     }
 
-
-
     //Get videos by tag (for AI-like recommendations)
     public List<VideoRecommendation> getRecommendationsByTag(String tag, int limit) {
         open();
@@ -226,12 +229,12 @@ public class VideoRecommendationDAO {
         values.put("video_title", videoTitle);
         values.put("youtube_video_id", youtubeVideoId);
         values.put("timestamp", String.valueOf(timestamp)); // store as String for consistency
-        values.put("tag", tag); // ✅ NEW
+        values.put("tag", tag);
         db.insert("video_click_log", null, values);
         close();
     }
 
-
+    // Returns top N most watched tags for a module
     public List<String> getMostWatchedTags(int moduleId, int topN) {
         open();
         List<String> topTags = new ArrayList<>();
@@ -257,6 +260,71 @@ public class VideoRecommendationDAO {
         close();
         return topTags;
     }
+
+    // Gets all recommendations reshuffled based on re-watch frequency
+    public List<VideoRecommendation> getRecommendationsByWatchCount() {
+        List<VideoRecommendation> videos = new ArrayList<>();
+        open();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT vr.* FROM video_recommendations vr " +
+                        "LEFT JOIN video_click_log vcl ON substr(vr.url, -11) = vcl.youtube_video_id " +
+                        "GROUP BY vr.id " +
+                        "ORDER BY COUNT(vcl.id) DESC",
+                null
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                VideoRecommendation video = new VideoRecommendation();
+                video.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                video.setModuleId(cursor.getInt(cursor.getColumnIndexOrThrow("module_id")));
+                video.setTitle(cursor.getString(cursor.getColumnIndexOrThrow("title")));
+                video.setUrl(cursor.getString(cursor.getColumnIndexOrThrow("url")));
+                video.setThumbnailUrl(cursor.getString(cursor.getColumnIndexOrThrow("thumbnail_url")));
+                video.setTag(cursor.getString(cursor.getColumnIndexOrThrow("tag")));
+                videos.add(video);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        close();
+        return videos;
+    }
+
+    public List<VideoRecommendation> getRecommendationsByUserWatchCount(String userId, int limit) {
+        List<VideoRecommendation> videos = new ArrayList<>();
+        open();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT vr.*, COUNT(vcl.id) AS click_count " +
+                        "FROM video_recommendations vr " +
+                        "LEFT JOIN video_click_log vcl ON substr(vr.url, -11) = vcl.youtube_video_id " +
+                        "AND vcl.tag LIKE ? " +
+                        "GROUP BY vr.id " +
+                        "ORDER BY click_count DESC " +
+                        "LIMIT ?",
+                new String[]{"%" + userId + ":%", String.valueOf(limit)}
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                VideoRecommendation video = new VideoRecommendation();
+                video.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                video.setModuleId(cursor.getInt(cursor.getColumnIndexOrThrow("module_id")));
+                video.setTitle(cursor.getString(cursor.getColumnIndexOrThrow("title")));
+                video.setUrl(cursor.getString(cursor.getColumnIndexOrThrow("url")));
+                video.setThumbnailUrl(cursor.getString(cursor.getColumnIndexOrThrow("thumbnail_url")));
+                video.setTag(cursor.getString(cursor.getColumnIndexOrThrow("tag")));
+                videos.add(video);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        close();
+        return videos;
+    }
+
 
 
     public void clearAllRecommendations() {

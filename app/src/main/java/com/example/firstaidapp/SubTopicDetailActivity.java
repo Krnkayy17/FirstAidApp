@@ -68,10 +68,11 @@ public class SubTopicDetailActivity extends AppCompatActivity {
         btnTakeQuiz = findViewById(R.id.btnTakeQuiz);
         moduleProgressDAO = new ModuleProgressDAO(this, userId);
 
-        // Get extras
+        // Get module ID and total content count
         moduleId = getIntent().getIntExtra("MODULE_ID", -1);
         totalContentCount = contentDAO.getAllContentsByModule(moduleId).size();
 
+        // Prompt user to resume from last viewed content
         int lastViewed = userContentViewDAO.getLastViewedOrder(userId, moduleId);
         if (lastViewed > 1) {
             new AlertDialog.Builder(this)
@@ -84,6 +85,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
             displaySection(1);
         }
 
+        // Quiz button navigation
         btnTakeQuiz.setOnClickListener(v -> {
             Intent intent = new Intent(SubTopicDetailActivity.this, QuizActivity.class);
             intent.putExtra("MODULE_ID", moduleId);
@@ -101,6 +103,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
             return;
         }
 
+        // Set section title
         for (Content content : sectionContent) {
             if (content.getContentTitle() != null && !content.getContentTitle().isEmpty()) {
                 detailTitle.setText(content.getContentTitle());
@@ -108,6 +111,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
             }
         }
 
+        // Render content
         for (Content content : sectionContent) {
             userContentViewDAO.markContentAsViewed(userId, content.getContentId(), moduleId);
 
@@ -130,11 +134,12 @@ public class SubTopicDetailActivity extends AppCompatActivity {
         handleNavigation();
     }
 
+    // Updates progress UI and quiz button visibility
     private void updateProgressUI() {
         ModuleProgressDAO moduleProgressDAO = new ModuleProgressDAO(this, userId);
         moduleProgressDAO.updateProgressAndCompletion(moduleId);
 
-        // Update UI after logic
+        // Update progress module
         int viewedCount = userContentViewDAO.getViewedCountForModule(userId, moduleId);
         int totalCount = contentDAO.getAllContentsByModule(moduleId).size();
         int percent = (int) ((viewedCount / (float) totalCount) * 100);
@@ -167,6 +172,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
         });
     }
 
+    // Shows dialog to prompt user to start quiz after finishing content
     private void showStartQuizDialog() {
         int viewedCount = userContentViewDAO.getViewedCountForModule(userId, moduleId);
         boolean moduleCompleted = viewedCount >= totalContentCount;
@@ -224,6 +230,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
         }
     }
 
+    // Add a clickable video thumbnail
     private void addVideoLink(String url) {
         String videoId = extractYouTubeVideoId(url);
         if (videoId == null || videoId.isEmpty()) return;
@@ -248,6 +255,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
         contentContainer.addView(thumbnail);
     }
 
+    // Extract video ID from YouTube URL
     private String extractYouTubeVideoId(String url) {
         if (url == null) return null;
         String pattern = "(?<=youtu.be/|watch\\?v=|embed/)[^&#\\n]+";
@@ -265,7 +273,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
         return null;
     }
 
-
+    // Default layout parameters for dynamic views
     private LinearLayout.LayoutParams getDefaultLayoutParams() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -275,6 +283,7 @@ public class SubTopicDetailActivity extends AppCompatActivity {
         return params;
     }
 
+    // Log content view event to Firebase Analytics
     private void logFirebaseContentView(Content content) {
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "content_" + content.getContentId());

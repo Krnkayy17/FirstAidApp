@@ -13,6 +13,7 @@ public class FirebaseAnalyticsTracker {
         analytics = FirebaseAnalytics.getInstance(context);
     }
 
+    // Log when user completed a quiz
     public void logQuizCompleted(String moduleName, int score, String userType) {
         Bundle bundle = new Bundle();
         bundle.putString("module_name", moduleName);
@@ -21,6 +22,7 @@ public class FirebaseAnalyticsTracker {
         analytics.logEvent("quiz_completed", bundle);
     }
 
+    // Log recommended videos shown
     public void logVideoRecommendationShown(String moduleName, int videoCount) {
         Bundle bundle = new Bundle();
         bundle.putString("module_name", moduleName);
@@ -28,6 +30,7 @@ public class FirebaseAnalyticsTracker {
         analytics.logEvent("video_recommendation_shown", bundle);
     }
 
+    // Log user clicked on a recommended video
     public void logVideoClicked(String moduleName, String videoId, String videoTitle) {
         Bundle bundle = new Bundle();
         bundle.putString("module_name", moduleName);
@@ -36,6 +39,7 @@ public class FirebaseAnalyticsTracker {
         analytics.logEvent("video_clicked", bundle);
     }
 
+    // Log when the user clicked the "see all..." button
     public void logVideoSeeAllClicked(String source) {
         Bundle bundle = new Bundle();
         bundle.putString("source", source);
@@ -43,7 +47,7 @@ public class FirebaseAnalyticsTracker {
         analytics.logEvent("video_see_all_clicked", bundle);
     }
 
-
+    // Log when user viewed content section
     public void logContentViewed(String contentTitle, String moduleName) {
         Bundle bundle = new Bundle();
         bundle.putString("content_title", contentTitle);
@@ -101,6 +105,4 @@ public class FirebaseAnalyticsTracker {
         bundle.putInt("total_questions", totalQuestions);
         analytics.logEvent("module_progress_attempt_tapped", bundle);
     }
-
-
 }

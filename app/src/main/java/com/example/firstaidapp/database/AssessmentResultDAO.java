@@ -87,7 +87,7 @@ public class AssessmentResultDAO {
         return 0;
     }
 
-    // ✅ NEW: Get all past attempts for specific user and module
+    // Get all past attempts for specific user and module
     public List<AssessmentResult> getAllAttemptsForUserAndModule(int userId, int moduleId) {
         List<AssessmentResult> list = new ArrayList<>();
 

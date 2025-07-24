@@ -82,9 +82,11 @@ public class ProgressSummaryActivity extends AppCompatActivity {
         setupBottomNavigation();
     }
 
+    // Renders the pie chart and breakdown text
     private void renderPieChart() {
         int completed = 0, inProgress = 0, notStarted = 0;
 
+        // Renders the pie chart and breakdown text
         for (Module module : allModules) {
             int contentProgress = getModuleContentProgress(module);
             if (isModuleCompleted(module)) {
@@ -134,6 +136,7 @@ public class ProgressSummaryActivity extends AppCompatActivity {
 
     }
 
+    // Configures the filter dropdown to update the module list based on selected status
     private void setupFilter() {
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -144,6 +147,7 @@ public class ProgressSummaryActivity extends AppCompatActivity {
                     int contentProgress = getModuleContentProgress(module);
                     boolean completed = isModuleCompleted(module);
 
+                    // Apply filtering logic
                     if (selected.equals("All")
                             || (selected.equals("Completed") && completed)
                             || (selected.equals("In Progress") && contentProgress > 0 && !completed)
@@ -152,9 +156,9 @@ public class ProgressSummaryActivity extends AppCompatActivity {
                     }
                 }
 
+                // Display filtered list in RecyclerView
                 recyclerModules.setAdapter(new ProgressModuleAdapter(ProgressSummaryActivity.this, filtered));
-                analyticsTracker.logProgressFilterSelected(selected);
-
+                analyticsTracker.logProgressFilterSelected(selected); // Log filter selection to analytics
             }
 
             @Override public void onNothingSelected(AdapterView<?> parent) {}
@@ -163,6 +167,7 @@ public class ProgressSummaryActivity extends AppCompatActivity {
         filterSpinner.setSelection(0); // Default to "All"
     }
 
+    // Calculates content progress for a specific module (in %)
     private int getModuleContentProgress(Module module) {
         int totalContent = contentDAO.getContentByModule(module.getModuleID()).size();
         int viewedContent = userContentViewDAO.getViewedCountForModule(userId, module.getModuleID());
@@ -172,6 +177,7 @@ public class ProgressSummaryActivity extends AppCompatActivity {
         return 0;
     }
 
+    // Determines if the module is fully completed (content + quiz score threshold)
     private boolean isModuleCompleted(Module module) {
         int contentProgress = getModuleContentProgress(module);
         if (contentProgress < 100) return false;

@@ -42,7 +42,7 @@ public class VideoRecommendationAdapter extends RecyclerView.Adapter<VideoRecomm
         VideoRecommendation video = videoList.get(position);
         holder.tvTitle.setText(video.getTitle());
 
-        // ✅ Use pre-generated thumbnail URL
+        // Use pre-generated thumbnail URL
         String thumbnailUrl = video.getThumbnailUrl();
         if (thumbnailUrl != null && !thumbnailUrl.isEmpty()) {
             Glide.with(context)

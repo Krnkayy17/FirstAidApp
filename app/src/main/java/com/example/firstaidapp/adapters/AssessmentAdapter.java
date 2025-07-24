@@ -23,8 +23,12 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 
+/* RecyclerView Adapter for displaying a list of assessment modules.
+   Each module shows quiz info such as question breakdown, last attempt, progress, and unlock status.
+*/
 public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.AssessmentViewHolder> {
 
+    // Adapter fields
     private final Context context;
     private final List<Module> moduleList;
     private final QuestionDAO questionDAO;
@@ -32,6 +36,7 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
     private final String userType;
     private final int userId;
 
+    // Constructor
     public AssessmentAdapter(Context context, List<Module> moduleList,
                              QuestionDAO questionDAO,
                              AssessmentResultDAO resultDAO,
@@ -46,16 +51,19 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
 
     @NonNull
     @Override
+    // Inflates the layout for each item in the assessment list
     public AssessmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_assessment, parent, false);
         return new AssessmentViewHolder(view);
     }
 
+    //  Binds data to each item (module) in the RecyclerView
     @Override
     public void onBindViewHolder(@NonNull AssessmentViewHolder holder, int position) {
         Module module = moduleList.get(position);
         List<Question> questions = questionDAO.getQuestionsByModuleId(module.getModuleID());
 
+        // Count question types
         int mcqCount = 0, scenarioCount = 0;
         for (Question q : questions) {
             if ("mcq".equalsIgnoreCase(q.getQuestionType())) mcqCount++;
@@ -65,15 +73,18 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
         int total = mcqCount + scenarioCount;
         int required = userType.equalsIgnoreCase("volunteer") ? 100 : 80;
 
+        // Display module info
         holder.tvModuleTitle.setText(module.getModuleName());
         holder.tvQuestionCount.setText(total + " Questions");
         holder.tvBreakdown.setText(mcqCount + " MCQ, " + scenarioCount + " Scenario");
         holder.tvRequirement.setText("Pass requirement: " + required + "% (" + userType + ")");
 
+        // Display module progress
         int percent = module.getProgressPercentage();
         holder.tvProgressLabel.setText("Progress: " + percent + "%");
         holder.progressScore.setProgress(percent);
 
+        // Show last result and retake count
         AssessmentResult result = resultDAO.getLatestResult(userId, module.getModuleID());
         if (result != null) {
             holder.tvLastTaken.setText("🕓 Last taken: " + result.getDateTaken());
@@ -83,10 +94,12 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
             holder.tvRetakeCount.setText("🔁 Retakes: 0");
         }
 
+        // Determine if the module is unlocked
         UserContentViewDAO userContentViewDAO = new UserContentViewDAO(context);
         int viewedCount = userContentViewDAO.getViewedCountForModule(userId, module.getModuleID());
         boolean isUnlocked = viewedCount > 0;
 
+        // Show or hide badge and lock icon
         holder.tvAssessmentBadge.setVisibility(isUnlocked ? View.VISIBLE : View.GONE);
         holder.imgLock.setVisibility(isUnlocked ? View.GONE : View.VISIBLE);
 
@@ -94,13 +107,14 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
         holder.btnStart.setAlpha(isUnlocked ? 1.0f : 0.5f);
         holder.btnStart.setText(isUnlocked ? "Start Quiz" : "Locked");
 
+        // Handle quiz start button
         holder.btnStart.setOnClickListener(v -> {
             if (!isUnlocked) {
                 Toast.makeText(context, "Please start the module first.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Log quiz_started to Firebase
+            // Log quiz start event to Firebase
             Bundle bundle = new Bundle();
             bundle.putString("module_name", module.getModuleName());
             bundle.putInt("module_id", module.getModuleID());
@@ -108,7 +122,7 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
             bundle.putInt("question_count", questions.size());
 
             FirebaseAnalytics.getInstance(context).logEvent("quiz_started", bundle);
-
+            // Start quiz activity
             Intent intent = new Intent(context, QuizActivity.class);
             intent.putExtra("MODULE_ID", module.getModuleID());
             context.startActivity(intent);
@@ -117,10 +131,12 @@ public class AssessmentAdapter extends RecyclerView.Adapter<AssessmentAdapter.As
     }
 
     @Override
+    // Returns the total number of modules in the list
     public int getItemCount() {
         return moduleList.size();
     }
 
+    // ViewHolder class for holding views in each assessment item layout
     static class AssessmentViewHolder extends RecyclerView.ViewHolder {
         TextView tvModuleTitle, tvQuestionCount, tvBreakdown, tvRequirement;
         TextView tvProgressLabel, tvLastTaken, tvRetakeCount, tvAssessmentBadge;

@@ -1,14 +1,15 @@
 package com.example.firstaidapp.models;
 
 public class VideoClickLog {
+
     private int id;
     private int moduleId;
     private String videoTitle;
     private String youtubeVideoId;
     private String timestamp;
+    private String tag;
 
-    private String tag; // ✅ NEW
-
+    // Constructor with ID (used when retrieving from database)
     public VideoClickLog(int id, int moduleId, String videoTitle, String youtubeVideoId, String timestamp, String tag) {
         this.id = id;
         this.moduleId = moduleId;
@@ -18,6 +19,7 @@ public class VideoClickLog {
         this.tag = tag;
     }
 
+    // Constructor without ID (used when creating a new log to insert into database)
     public VideoClickLog(int moduleId, String videoTitle, String youtubeVideoId, String timestamp, String tag) {
         this(-1, moduleId, videoTitle, youtubeVideoId, timestamp, tag);
     }

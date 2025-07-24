@@ -39,6 +39,7 @@ public class AssessmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assessment);
 
+        // Initialize UI elements and logic
         initViews();
         initData();
         showPassInfo();
@@ -66,6 +67,7 @@ public class AssessmentActivity extends AppCompatActivity {
         resultDAO = new AssessmentResultDAO(this);
     }
 
+    // Shows pass requirement message based on user type
     private void showPassInfo() {
         if ("volunteer".equalsIgnoreCase(userType)) {
             tvPassInfo.setText("📌 Volunteers must score 100% to pass each assessment.");
@@ -75,11 +77,12 @@ public class AssessmentActivity extends AppCompatActivity {
     }
 
     private void loadAssessmentModules() {
-        List<Module> modules = moduleDAO.getAllModules();
+        List<Module> modules = moduleDAO.getAllModules(); // Get all modules from database
 
         if (modules.isEmpty()) {
             Toast.makeText(this, "No modules found.", Toast.LENGTH_SHORT).show();
         } else {
+            // Set up adapter with module data and attach it to RecyclerView
             AssessmentAdapter adapter = new AssessmentAdapter(this, modules, questionDAO, resultDAO, userType, userId);
             recyclerAssessment.setAdapter(adapter);
         }

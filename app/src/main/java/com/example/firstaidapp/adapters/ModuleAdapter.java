@@ -42,6 +42,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
     public void onBindViewHolder(@NonNull ModuleViewHolder holder, int position) {
         Module module = moduleList.get(position);
 
+        // Set basic module information
         holder.tvModuleName.setText(module.getModuleName());
         holder.tvAccessedDate.setText(formatAccessedDate(module.getAccessedDate()));
         holder.tvModuleDescription.setText(module.getDescription());
@@ -50,12 +51,14 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
         holder.tvAssessments.setText("Assessments: " + module.getTotalAssessments());
         holder.tvCompletionCriteria.setText("Completion: " + module.getCompletionCriteria());
 
+        // Set progress bar and text
         int progress = module.getProgressPercentage();
         holder.progressBar.setProgress(progress);
         holder.tvModuleProgress.setText("Progress: " + progress + "%");
 
         setStatusUI(holder, module);
 
+        // Handle locked or unlocked state
         if (module.isLocked()) {
             setupLockedState(holder);
         } else {
@@ -76,6 +79,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
         return (date == null || date.isEmpty()) ? "Not accessed yet" : "Last accessed: " + date;
     }
 
+    // Sets the status UI depending on module's completion status
     private void setStatusUI(ModuleViewHolder holder, Module module) {
         int colorId;
         String statusText;
@@ -130,21 +134,20 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
 
     private void setupUnlockedState(ModuleViewHolder holder, Module module, int progress) {
         holder.itemView.setAlpha(1f); // Restore full opacity
-
         holder.btnContinueModule.setEnabled(true);
         holder.btnContinueModule.setBackgroundColor(ContextCompat.getColor(context, R.color.red));
-
         // Remove long click listener if previously set
         holder.itemView.setOnLongClickListener(null);
 
         holder.btnContinueModule.setOnClickListener(v -> {
+            // Update access date
             String currentDate = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(new Date());
-
             ModuleDAO moduleDAO = new ModuleDAO(context);
             moduleDAO.updateLastAccessed(module.getModuleID(), currentDate);
             module.setAccessedDate(currentDate);
             holder.tvAccessedDate.setText("Last accessed: " + currentDate);
 
+            // Set module to "In Progress" if it was "Not Started"
             if ("Not Started".equals(module.getCompletionStatus())) {
                 module.setCompletionStatus("In Progress");
                 moduleDAO.updateCompletionStatus(module.getModuleID(), "In Progress");
@@ -163,6 +166,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
         intent.putExtra("MODULE_TITLE", module.getModuleName());
         intent.putExtra("MODULE_DESCRIPTION", module.getDescription());
 
+        // Choose image based on module name
         int imageRes;
         switch (module.getModuleName().toLowerCase()) {
             case "cpr":
@@ -189,6 +193,7 @@ public class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.ModuleView
         }
     }
 
+    // ViewHolder class that holds views for each module card
     public static class ModuleViewHolder extends RecyclerView.ViewHolder {
         TextView tvModuleName, tvAccessedDate, tvModuleDescription, tvDifficulty,
                 tvDuration, tvAssessments, tvCompletionCriteria, tvModuleProgress, tvModuleStatus;

@@ -8,8 +8,10 @@ public class User {
     private String userType; // Two types, VADs or general public
     private String userImage;
 
-    // Empty constructor (useful when creating objects dynamically)
-    public User() {}
+    // Default constructor
+    public User() {
+
+    }
 
     // Constructor
     public User(int userId, String userName, String userEmail, String userPassword, String userType, String userImage) {

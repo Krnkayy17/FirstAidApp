@@ -150,7 +150,7 @@ public class ContentDAO {
             insertContent(new Content(moduleId, null, "\uD83D\uDED1 D – Danger\n" +
                     "•\tEnsure the area is safe for you, the victim, and bystanders.\n" +
                     "•\tDo not approach if there is any ongoing danger.\n", null, null, order, "text"));
-            insertContent(new Content(moduleId, null, null, "check_for_danger", null, order, "image"));
+            insertContent(new Content(moduleId, null, null, "check_danger", null, order, "image"));
             insertContent(new Content(moduleId, null, "\uD83D\uDC4B R – Response\n" +
                     "•\tGently shake the person and ask loudly, “Are you okay?”\n" +
                     "•\tIf no response, proceed to the next step.\n", null, null, order, "text"));
@@ -181,6 +181,7 @@ public class ContentDAO {
                     "•\tDo not touch the person during analysis or shock delivery.\n" +
                     "•\tResume CPR immediately after any shock.\n", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, "using_aed", null, order, "image"));
+            insertContent(new Content(moduleId, null, "Watch Video: DRSABCD First Aid", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/FsRura3FIo0?si=B554sTXf7gdn4djK", order, "video"));
             order++;
 
@@ -195,6 +196,7 @@ public class ContentDAO {
             insertContent(new Content(moduleId, null, null, "deliver_compress", null, order, "image"));
             insertContent(new Content(moduleId, null, "5.\tContinue 30:2 cycles until help arrives or signs of life return.", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, "help_arrived", null, order, "image"));
+            insertContent(new Content(moduleId, null, "Watch Video: How to do CPR on Adult", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/BQNNOh8c8ks?si=Df8t2_nE2VMQNhTC", order, "video"));
             order++;
 
@@ -205,9 +207,9 @@ public class ContentDAO {
             insertContent(new Content(moduleId, null, null, "child_chest_compression", null, order, "image"));
             insertContent(new Content(moduleId, null, "•\tUse gentle rescue breaths—just enough to make the chest rise.", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, "baby_rescue_breath", null, order, "image"));
-            insertContent(new Content(moduleId, null, "Child", null, null, order, "text"));
+            insertContent(new Content(moduleId, null, "Watch Video: How to do CPR on a Child", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/c7Q1s7ppSwc?si=clz1NM9lDiXlChPW", order, "video"));
-            insertContent(new Content(moduleId, null, "Infant", null, null, order, "text"));
+            insertContent(new Content(moduleId, null, "Watch Video: How to do CPR on an Infant", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/XJQF-qUWOLA?si=9PYQR9Up6pg-OYti", order, "video"));
             order++;
 
@@ -229,6 +231,7 @@ public class ContentDAO {
             insertContent(new Content(moduleId, null, "8.\tImmediately resume CPR with 30 chest compressions and 2 rescue breaths after the shock is delivered, or if no shock is advised.", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, "continue_compression", null, order, "image"));
             insertContent(new Content(moduleId, null, "9.\tContinue to follow the AED’s voice prompts. It may re-analyze the heart rhythm every two minutes and advise additional shocks or continued CPR.", null, null, order, "text"));
+            insertContent(new Content(moduleId, null, "Watch Video: How to use an AED", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/2PJR0JyLPZY?si=MXVC9ab3WI7uXoNf  ", order, "video"));
             order++;
 
@@ -243,11 +246,11 @@ public class ContentDAO {
             insertContent(new Content(moduleId, null, "•\tDrowning: Give 5 initial rescue breaths before compressions.\n" +
                     "•\tTrauma: Handle with care to prevent further injuries.\n" +
                     "•\tPregnancy: Perform compressions slightly higher and tilt the person slightly to the left.\n", null, null, order, "text"));
-            insertContent(new Content(moduleId, null, "Drowning", null, null, order, "text"));
+            insertContent(new Content(moduleId, null, "Watch Video: How to Perform CPR on a Drowning Casualty", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/74QiUtXcV5o?si=Hn9s4UhLh6RrIOcQ", order, "video"));
-            insertContent(new Content(moduleId, null, "Trauma", null, null, order, "text"));
+            insertContent(new Content(moduleId, null, "Watch Vidoe: Do you do CPR on a Trauma Patient", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/JYyuRYFvR34?si=GhUyrBKBnri7ufwN", order, "video"));
-            insertContent(new Content(moduleId, null, "Pregnancy", null, null, order, "text"));
+            insertContent(new Content(moduleId, null, "Watch Video: How to do CPR on a Pregnant Woman", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/doVSpYgjkvk?si=2a6ywCf1mhVqk5JP", order, "video"));
             order++;
 
@@ -286,6 +289,7 @@ public class ContentDAO {
                     "2.\tVenous Bleeding – Dark red, steady flow. Can be serious but easier to control.\n" +
                     "3.\tCapillary Bleeding – Oozes from surface wounds. Often minor but still requires care.\n", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, "type_of_bleeding", null, order, "image"));
+            insertContent(new Content(moduleId, null, "Watch Video: Types of bleed on The First Aid", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/dbKuHjKq9Ys?si=FvmGl2FWZ3_S9CZ2", order, "video"));
             order++;
 
@@ -316,6 +320,7 @@ public class ContentDAO {
             insertContent(new Content(moduleId, null, null, "seek_medical_assistant", null, order, "image"));
             insertContent(new Content(moduleId, null, "•\tSevere bleeding: call for emergency help immediately.\n" +
                     "•\tContinue care until professional help arrives.\n", null, null, order, "text"));
+            insertContent(new Content(moduleId, null, "Watch Video: How to Treat Severe Bleeding", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/NxO5LvgqZe0?si=_R11fYDFMObJtArR", order, "video"));
             order++;
 
@@ -324,6 +329,7 @@ public class ContentDAO {
             insertContent(new Content(moduleId, null, "•\tHave the person sit upright, tilt head forward.\n" +
                     "•\tPinch the soft part of the nose for 10–15 minutes.\n" +
                     "•\tAvoid leaning backward or blowing the nose.\n", null, null, order, "text"));
+            insertContent(new Content(moduleId, null, "Watch Video: How to Treat Nose Bleeds", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/PmmhxW0vVXA?si=kdcKZJIFjcA7LwmJ", order, "video"));
             insertContent(new Content(moduleId, null, null, "nose_bleeding", null, order, "image"));
             insertContent(new Content(moduleId, null, "b) Internal Bleeding", null, null, order, "text"));
@@ -337,6 +343,7 @@ public class ContentDAO {
                     "•\tSecure object in place with bandages.\n" +
                     "•\tSeek emergency medical help.\n", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, "embedded_obj", null, order, "image"));
+            insertContent(new Content(moduleId, null, "Watch Video: Treating an Embedded object on the First Aid", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/Q6nSg9Iqc0s?si=mn6uDqwR5krcQCVs", order, "video"));
             order++;
 
@@ -358,7 +365,9 @@ public class ContentDAO {
                     "•\tNever loosen or remove; let trained responders handle it.\n", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, "tourniqet", null, order, "image"));
             insertContent(new Content(moduleId, null, null, "tourniqet_placement", null, order, "image"));
+            insertContent(new Content(moduleId, null, "Watch Video: THow to use a tourniquet", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/jCKCjH_Ugs0?si=7DBsUVPRDV69JWe5", order, "video"));
+            insertContent(new Content(moduleId, null, "Watch Video: Stop the Bleed - Tourniquet", null, null, order, "text"));
             insertContent(new Content(moduleId, null, null, null, "https://youtu.be/u3nrDb5XjSI?si=MrYla98ihaxk4iMt", order, "video"));
             order++;
 

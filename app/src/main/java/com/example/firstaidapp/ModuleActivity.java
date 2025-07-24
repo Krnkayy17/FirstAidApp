@@ -36,6 +36,7 @@ public class ModuleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_module);
 
+        // Initialize Firebase Analytics for event logging
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         logScreenViewEvent();
 
@@ -64,12 +65,15 @@ public class ModuleActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    // Populate the module table if it is currently empty
     private void seedDefaultModulesIfNeeded() {
         moduleList = moduleDAO.getAllModules();
         if (moduleList.isEmpty()) {
             moduleList = new ArrayList<>();
+            // CPR module is unlocked by default
             moduleList.add(new Module(1, "CPR", "Learn CPR techniques", "Intermediate", 15, 10,
                     "Complete all assessments", "Not Accessed Yet", "Not Started", 0, false));
+            // Next module is locked
             moduleList.add(new Module(2, "Bleeding Management", "Control bleeding in emergencies", "Beginner", 10, 10,
                     "Pass all assessments", "Not Accessed Yet", "Not Started", 0, true));
             for (Module module : moduleList) {
@@ -78,6 +82,7 @@ public class ModuleActivity extends AppCompatActivity {
         }
     }
 
+    // Load modules, calculate and update progress, and handle locking logic
     private void loadModulesWithUpdatedProgress() {
         moduleList = moduleDAO.getAllModules();
 
@@ -85,14 +90,16 @@ public class ModuleActivity extends AppCompatActivity {
             Module module = moduleList.get(i);
             int moduleId = module.getModuleID();
 
-            // Update progress
+            // Calculate user's overall progress for the module
             int percentage = ModuleProgressUtil.calculateModuleProgress(this, userId, moduleId);
             module.setProgressPercentage(percentage);
 
+            // Set and update status based on percentage
             String status = (percentage == 100) ? "Completed" :
                     (percentage > 0) ? "In Progress" : "Not Started";
             module.setCompletionStatus(status);
 
+            // Save progress and status into database
             moduleDAO.updateProgressPercentage(moduleId, percentage);
             moduleDAO.updateCompletionStatus(moduleId, status);
 
@@ -113,7 +120,7 @@ public class ModuleActivity extends AppCompatActivity {
                     logModuleUnlockedEvent(module.getModuleName());
                 }
             }
-
+            // Save lock status to database
             moduleDAO.updateLockStatus(moduleId, module.isLocked());
         }
 
@@ -128,6 +135,7 @@ public class ModuleActivity extends AppCompatActivity {
         updateModuleCompletionSummary();
     }
 
+    // Count and display how many modules are completed
     private void updateModuleCompletionSummary() {
         int completedCount = 0;
         int total = moduleList != null ? moduleList.size() : 0;
@@ -142,6 +150,7 @@ public class ModuleActivity extends AppCompatActivity {
         tvModuleSummary.setText("Modules Completed: " + completedCount + " / " + total);
     }
 
+    // Bottom Navigation
     private void setupBottomNav() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_modules);
@@ -163,6 +172,7 @@ public class ModuleActivity extends AppCompatActivity {
         });
     }
 
+    // Log screen view to Firebase Analytics
     private void logScreenViewEvent() {
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "ModuleActivity");
@@ -170,6 +180,7 @@ public class ModuleActivity extends AppCompatActivity {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
     }
 
+    // Log module unlocked event to Firebase Analytics
     private void logModuleUnlockedEvent(String moduleTitle) {
         Bundle bundle = new Bundle();
         bundle.putString("module_unlocked", moduleTitle);

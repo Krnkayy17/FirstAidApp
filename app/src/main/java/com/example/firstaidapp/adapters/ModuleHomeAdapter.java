@@ -8,7 +8,7 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.firstaidapp.ModuleOverviewActivity;
+import com.example.firstaidapp.ModuleActivity;
 import com.example.firstaidapp.R;
 import com.example.firstaidapp.models.Module;
 
@@ -35,7 +35,7 @@ public class ModuleHomeAdapter extends RecyclerView.Adapter<ModuleHomeAdapter.Vi
         Module module = moduleList.get(position);
         holder.tvModuleTitle.setText(module.getModuleName());
         holder.btnStartLearning.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ModuleOverviewActivity.class);
+            Intent intent = new Intent(context, ModuleActivity.class);
             intent.putExtra("MODULE_ID", module.getModuleID());
             intent.putExtra("MODULE_TITLE", module.getModuleName());
             intent.putExtra("MODULE_DESCRIPTION", module.getDescription());

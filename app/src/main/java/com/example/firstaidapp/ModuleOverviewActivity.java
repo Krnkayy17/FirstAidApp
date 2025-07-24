@@ -46,7 +46,6 @@ public class ModuleOverviewActivity extends AppCompatActivity {
             }
         }
 
-
         startLearningButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

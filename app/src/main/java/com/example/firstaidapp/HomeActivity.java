@@ -23,11 +23,15 @@ import com.example.firstaidapp.database.VideoClickLogDAO;
 import com.example.firstaidapp.database.VideoRecommendationDAO;
 import com.example.firstaidapp.models.VideoClickLog;
 import com.example.firstaidapp.models.VideoRecommendation;
+import com.example.firstaidapp.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -84,11 +88,11 @@ public class HomeActivity extends AppCompatActivity {
 
         loadSmartVideoFeed();
 
+        // Set up "See All Videos" button
         Button btnSeeAll = findViewById(R.id.btnSeeAllVideos);
         btnSeeAll.setOnClickListener(v -> {
             new FirebaseAnalyticsTracker(this).logVideoSeeAllClicked("HomeSmartFeed");
             Intent intent = new Intent(HomeActivity.this, RecommendationActivity.class);
-            // Optional: don't pass module name to show global recommendations
             startActivity(intent);
         });
 
@@ -98,7 +102,8 @@ public class HomeActivity extends AppCompatActivity {
         int[] images = {
                 R.drawable.banner_cpr,
                 R.drawable.banner_bleeding,
-                R.drawable.banner_emergency
+                R.drawable.banner_emergency,
+                R.drawable.cpr_banner
         };
 
         bannerSliderRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -125,10 +130,10 @@ public class HomeActivity extends AppCompatActivity {
         handler.postDelayed(autoScrollFunFacts, 5000);
     }
 
-
+    // Loads module data
     private void setupModuleList() {
         moduleDAO = new ModuleDAO(this);
-        recyclerHomeModules.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerHomeModules.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerHomeModules.setAdapter(new ModuleHomeAdapter(this, moduleDAO.getAllModules()));
     }
 
@@ -158,44 +163,46 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-
     private void loadSmartVideoFeed() {
         VideoRecommendationDAO videoDAO = new VideoRecommendationDAO(this);
+        SessionManager sessionManager = new SessionManager(this);
+        int userId = sessionManager.getUserId();
+        String userIdStr = String.valueOf(userId);
 
-        // Step 1: Try getting the most watched tags
-        List<String> topTags = videoDAO.getMostWatchedTags(-1, 2); // -1 = global
-        Log.d("SmartFeed", "Most watched tags: " + topTags);
-
-        // Step 2: Fallback to default tags if user hasn't watched anything
-        if (topTags == null || topTags.isEmpty()) {
-            topTags = Arrays.asList("cpr_basics", "aed", "bleeding_control", "infant_cpr");
-            Log.d("SmartFeed", "Fallback tags used: " + topTags);
+        // Step 1: Get personalized videos by user watch count
+        List<VideoRecommendation> smartVideos = videoDAO.getRecommendationsByUserWatchCount(userIdStr, 3);
+        Set<String> videoIdsAdded = new HashSet<>();
+        for (VideoRecommendation video : smartVideos) {
+            videoIdsAdded.add(video.getYoutubeVideoId());
         }
 
-        // Step 3: Collect recommended videos
-        List<VideoRecommendation> smartVideos = new ArrayList<>();
-        for (String tag : topTags) {
-            List<VideoRecommendation> videosByTag = videoDAO.getRecommendationsByTag(tag, 3);
-            for (VideoRecommendation v : videosByTag) {
-                if (!smartVideos.contains(v)) {
-                    smartVideos.add(v);
+        // Step 2: Supplement with videos from key tags (e.g., CPR, Bleeding)
+        List<String> keyTags = Arrays.asList("cpr_basics", "bleeding_control");
+        for (String tag : keyTags) {
+            List<VideoRecommendation> tagVideos = videoDAO.getRecommendationsByTag(tag, 3);
+            for (VideoRecommendation video : tagVideos) {
+                if (!videoIdsAdded.contains(video.getYoutubeVideoId())) {
+                    smartVideos.add(video);
+                    videoIdsAdded.add(video.getYoutubeVideoId());
                 }
             }
         }
 
-        Log.d("SmartFeed", "Total videos loaded: " + smartVideos.size());
+        // Shuffle to randomize the display
+        Collections.shuffle(smartVideos);
 
-        // Step 4: Setup RecyclerView
+        // Step 3: Display the recommendations
         RecyclerView rvSmartFeed = findViewById(R.id.recyclerSmartFeed);
-        rvSmartFeed.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvSmartFeed.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         VideoRecommendationAdapter adapter = new VideoRecommendationAdapter(smartVideos, this, video -> {
-            // Log Firebase event
+            // Log to Firebase Analytics
             new FirebaseAnalyticsTracker(this).logVideoClicked("HomeSmartFeed", video.getYoutubeVideoId(), video.getTitle());
 
-            // Save to local click log
+            // Log to local DB
             String timestamp = String.valueOf(System.currentTimeMillis());
             new VideoClickLogDAO(this).insertLog(new VideoClickLog(
+                    userId,
                     video.getModuleId(),
                     video.getTitle(),
                     video.getYoutubeVideoId(),
@@ -203,7 +210,7 @@ public class HomeActivity extends AppCompatActivity {
                     video.getTag()
             ));
 
-            // Open video in YouTube
+            // Open YouTube link
             String url = "https://www.youtube.com/watch?v=" + video.getYoutubeVideoId();
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
