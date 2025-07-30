@@ -51,7 +51,7 @@ public class ModuleOverviewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent subtopicIntent = new Intent(ModuleOverviewActivity.this, SubTopicActivity.class);
                 subtopicIntent.putExtra("MODULE_ID", moduleId);
-                subtopicIntent.putExtra("MODULE_TITLE", module.getModuleName()); // ✅ Add this line
+                subtopicIntent.putExtra("MODULE_TITLE", module.getModuleName());
                 startActivity(subtopicIntent);
             }
         });
