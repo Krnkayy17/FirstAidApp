@@ -1,6 +1,6 @@
-# FirstAidApp
+# First Aid Learning Mobile Application: Interactive Training and Progress Tracking Tool
 
-A comprehensive Android application for learning and practicing first aid skills through interactive modules, quizzes, and educational content. This app provides structured learning pathways in CPR, bleeding control, emergency response, and more, with progress tracking and personalized video recommendations.
+The First Aid Learning Mobile Application is an Android-based educational application designed to provide users with accessible, interactive, and self-paced first aid training. The application combines multimedia learning materials, assessments, and progress tracking to help users learn essential first aid skills such as Cardiopulmonary Resuscitation (CPR) and Bleeding Management. It also recommends relevant YouTube videos to reinforce learning and encourage continuous improvement.
 
 ## Stack
 
@@ -12,6 +12,20 @@ A comprehensive Android application for learning and practicing first aid skills
   - Picasso (image processing)
   - MPAndroidChart (data visualization)
   - RecyclerView & ViewPager2 (UI components)
+ 
+## Target Users & Use Cases
+Target Users:
+- Volunteer Aid Detachment (VAD) members
+- General public
+- Anyone interested in learning basic first aid skills
+
+Use Cases:
+- Learn first aid procedures through structured modules
+- Practice knowledge using quizzes and scenario-based assessments
+- Track learning progress and assessment performance
+- Review completed modules
+- Receive personalized video recommendations for further learning
+- Study offline without continuous internet access (except YouTube videos and updates)
 
 ## How it's organized
 
