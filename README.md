@@ -1,19 +1,16 @@
-# FirstAidApp
+## First Aid Learning Mobile Application: Interactive Training and Progress Tracking Tool
 
-A comprehensive Android application for learning and practicing first aid skills through interactive modules, quizzes, and educational content. This app provides structured learning pathways in CPR, bleeding control, emergency response, and more, with progress tracking and personalized video recommendations.
+The First Aid Learning Mobile Application is an Android-based educational application designed to provide users with accessible, interactive, and self-paced first aid training. The application combines multimedia learning materials, assessments, and progress tracking to help users learn essential first aid skills such as Cardiopulmonary Resuscitation (CPR) and Bleeding Management. It also recommends relevant YouTube videos to reinforce learning and encourage continuous improvement.
 
 ## 🔐 Key Features
 
-- **User Registration & Login** — Secure Firebase authentication
-- **User Profile Management** — Personalized user profiles with progress history
-- **Interactive Learning Modules** — Structured courses on CPR, Bleeding Management, and more
+- **Interactive Learning Modules** — Structured courses on CPR and Bleeding Management
 - **Multimedia Learning** — Text, images, and video content integrated into lessons
 - **Multiple Choice Quizzes** — Knowledge assessment with instant feedback
 - **Scenario-Based Assessments** — Interactive drag-and-drop scenario challenges
 - **Progress Tracking** — Monitor module completion, assessment scores, and learning summaries
 - **Module Progress Dashboard** — Visual overview of learning achievements
 - **Rule-based YouTube Video Recommendations** — Smart video suggestions based on user activity and module progress
-- **Offline Learning Support** — Access most content without an internet connection
 - **Firebase Analytics** — Track user interactions and app performance
 
 ## Stack
@@ -84,26 +81,7 @@ app/
 │   ├── UserAnswer.java
 │   ├── VideoRecommendation.java
 │   └── VideoClickLog.java
-│
-├── adapters/                  RecyclerView & ViewPager2 adapters
-│   ├── ModuleHomeAdapter
-│   ├── ImageSliderAdapter
-│   ├── FunFactAdapter
-│   └── VideoRecommendationAdapter
-│
-├── analytics/                 Firebase Analytics tracking
-│   └── FirebaseAnalyticsTracker
-│
-├── utils/                     Utility classes and helpers
-│   ├── SessionManager         (User session management)
-│   └── Helper classes
-│
-└── resources/                 Android resources
-    ├── layout/                XML layout files for UI screens
-    ├── drawable/              App icons and graphics
-    ├── values/                Colors, strings, styles
-    ├── menu/                  Bottom navigation menu
-    └── mipmap/                App launcher icons
+
 ```
 
 **How it fits together:** The app starts with a splash screen, leading to login/signup via Firebase Authentication. Once logged in, users land on `HomeActivity`, which displays banner sliders, fun facts, available modules, and a smart video feed. Users navigate through five main sections via bottom navigation: Home, Modules, Assessments, Progress, and Profile. Each module contains subtopics with educational content, quizzes (MCQ and scenario-based), and assessments. The app tracks user progress, answers, and video interactions in a local SQLite database, while Firebase handles user authentication, crash reporting, and analytics.
@@ -145,7 +123,6 @@ Videos are ranked by relevance and presented in a personalized smart feed on the
 Most educational content is available offline, ensuring accessibility in areas with limited internet connectivity. Internet is required only for:
 - YouTube video recommendations
 - Firebase Analytics tracking
-- User authentication (first login)
 
 ## 🚀 How to run it
 
@@ -204,10 +181,8 @@ Most educational content is available offline, ensuring accessibility in areas w
 Currently available:
 - **Cardiopulmonary Resuscitation (CPR)** — Techniques and best practices
 - **Bleeding Management** — Stop bleeding and wound care
-- Additional modules in development
 
 ## 🔮 Future Improvements
-
 - More first aid modules (burns, fractures, shock, etc.)
 - iOS support
 - AI-powered personalized recommendations
@@ -217,14 +192,6 @@ Currently available:
 - Multi-language support
 
 ## 📝 Notes
-
 - Internet connection is required for YouTube video streaming and Firebase Analytics
 - All quiz data and progress is saved locally on device for offline access
-- User data can be backed up to Firebase for account recovery
-
-## Try asking
-
-- "How does the video recommendation algorithm work in the smart feed?"
-- "What data is stored locally vs. in Firebase, and why?"
-- "How are quiz results and user progress persisted across sessions?"
-- "How does the offline learning feature work?"
+  
