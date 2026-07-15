@@ -70,10 +70,4 @@ app/src/main/
 - **Quizzes:** Test knowledge with multiple-choice and scenario-based questions
 - **Assessments:** Complete full assessments to track competency
 - **Progress Tracking:** View detailed progress per module and overall performance
-- **Smart Video Feed:** Personalized YouTube video recommendations based on learning history
-
-## Try asking
-
-- "How does the video recommendation algorithm work in the smart feed?"
-- "What data is stored locally vs. in Firebase, and why?"
-- "How are quiz results and user progress persisted across sessions?"
+- **Smart Video Feed:** Personalized YouTube video recommendations based on learning history (I try to include this since my project does not involve any AI. That's why I want this feature imitates like AI).
